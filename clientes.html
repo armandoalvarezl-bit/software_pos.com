@@ -1,0 +1,267 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clientes | FarmaPOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<link rel="icon" type="image/png" href="favicon.png">
+<style>
+:root{--bg:#ecfdf5;--panel:#fff;--line:#d1fae5;--ink:#0f172a;--muted:#64748b;--brand:#065f46;--danger:#b91c1c}
+*{box-sizing:border-box;margin:0;padding:0;font-family:"Poppins",sans-serif}
+body{background:var(--bg);color:var(--ink)}
+.layout{display:grid;grid-template-columns:270px 1fr;min-height:100vh}
+.sidebar{background:linear-gradient(180deg,#064e3b 0%,#022c22 100%);color:#ecfdf5;padding:24px 18px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.brand{font-weight:700;font-size:1.2rem;margin-bottom:24px;display:flex;gap:10px;align-items:center}
+.menu a{display:flex;align-items:center;gap:10px;color:#d1fae5;text-decoration:none;padding:10px 12px;border-radius:11px;margin-bottom:6px;transition:background .2s,color .2s,transform .2s;font-size:.94rem}
+.menu a.active,.menu a:hover{background:rgba(255,255,255,.13);color:#fff}
+.main{padding:24px}
+.top{display:flex;justify-content:space-between;align-items:center;background:var(--panel);border:1px solid var(--line);padding:14px;border-radius:12px;margin-bottom:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
+.form{display:grid;grid-template-columns:repeat(7,minmax(120px,1fr));gap:8px}
+.input,.select{width:100%;padding:9px;border:1px solid #cbd5e1;border-radius:8px}
+.btn{border:none;border-radius:8px;padding:9px;cursor:pointer}
+.btn.save{background:#065f46;color:#fff}.btn.cancel{background:#e2e8f0}.btn.del{background:#fee2e2;color:#991b1b}
+.table{width:100%;border-collapse:collapse;margin-top:10px}.table th,.table td{padding:10px 6px;border-bottom:1px solid #ecfeff;text-align:left;font-size:.9rem}
+.msg{margin-top:8px;font-size:.85rem;color:var(--muted);min-height:16px}
+.logout{border:1px solid #bbf7d0;background:#f0fdf4;color:var(--brand);padding:7px 10px;border-radius:8px;cursor:pointer}
+.tools{display:grid;grid-template-columns:2fr 1fr auto auto;gap:8px;margin-top:10px}
+@media(max-width:1100px){.layout{grid-template-columns:1fr}
+}
+@media(max-width:1100px){.tools{grid-template-columns:1fr}}
+.menu-toggle{display:none;border:1px solid #cdeee2;background:#fff;color:#065f46;border-radius:8px;padding:6px 9px;cursor:pointer}
+.sidebar-overlay{display:none}
+
+@media(max-width:860px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{display:block;position:fixed;left:0;top:0;bottom:0;width:270px;z-index:50;transform:translateX(-110%);transition:transform .2s ease;box-shadow:0 18px 60px rgba(2,44,34,.22)}
+  .menu-toggle{display:inline-flex;align-items:center;justify-content:center}
+.sidebar-overlay{display:block;position:fixed;inset:0;background:rgba(2,44,34,.35);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+
+  z-index:40;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .2s ease;
+}
+  .layout.sidebar-open .sidebar{transform:translateX(0)}
+  .layout.sidebar-open .sidebar-overlay{opacity:1;pointer-events:auto}
+  .grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand"><i class="bi bi-capsule-pill"></i> FarmaPOS</div>
+  <nav class="menu">
+    <a href="dashboard.html"><i class="bi bi-speedometer2"></i> Dashboard</a>
+    <a href="pos.html"><i class="bi bi-cart-plus"></i> Ventas POS</a>
+    <a href="inventario.html"><i class="bi bi-box-seam"></i> Inventario</a>
+    <a href="clientes.html" class="active"><i class="bi bi-people"></i> Clientes</a>
+    <a href="recetas.html"><i class="bi bi-clipboard2-pulse"></i> Recetas</a>
+    <a href="reportes.html"><i class="bi bi-file-earmark-bar-graph"></i> Reportes</a>
+  </nav>
+</aside>
+<div class="sidebar-overlay" onclick="toggleSidebar(false)"></div>
+<main class="main">
+  <section class="top">
+    <button class="menu-toggle" type="button" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+    <div>
+      <div style="font-weight:600">Modulo de clientes</div>
+      <div id="sync" style="font-size:.8rem;color:var(--muted)">Sincronizando...</div>
+    </div>
+    <button class="logout" onclick="logout()">Cerrar sesion</button>
+  </section>
+
+  <section class="card" style="margin-bottom:12px">
+    <div style="font-weight:600;margin-bottom:8px">Formulario</div>
+    <div class="form">
+      <input class="input" id="cNombre" placeholder="Nombre completo">
+      <input class="input" id="cDoc" placeholder="Documento">
+      <input class="input" id="cTel" placeholder="Telefono">
+      <input class="input" id="cMail" placeholder="Email">
+      <select class="select" id="cEstado"><option>Activo</option><option>Inactivo</option></select>
+      <button class="btn save" id="btnSave" onclick="saveClient()">Guardar</button>
+      <button class="btn cancel" id="btnCancel" onclick="cancelEdit()" style="display:none">Cancelar</button>
+    </div>
+    <div class="msg" id="formMsg"></div>
+  </section>
+
+  <section class="card">
+    <div style="font-weight:600">Clientes registrados</div>
+    <div class="tools">
+      <input class="input" id="qSearch" placeholder="Buscar por nombre, documento o telefono" oninput="renderClients()">
+      <select class="select" id="qEstado" onchange="renderClients()">
+        <option value="">Todos los estados</option>
+        <option value="Activo">Activo</option>
+        <option value="Inactivo">Inactivo</option>
+      </select>
+      <button class="btn cancel" onclick="exportClientsCSV()">Exportar CSV</button>
+      <button class="btn cancel" onclick="window.print()">Imprimir</button>
+    </div>
+    <table class="table">
+      <thead><tr><th>Nombre</th><th>Documento</th><th>Telefono</th><th>Email</th><th>Estado</th><th>Acciones</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </section>
+</main>
+</div>
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycby9Rf23ERVyl9LwZvQBycddgtxyyx3R8OsqlX0Fyyr7hKuYqnKnEJTGDXH72HyFsrSg/exec";
+let current = [];
+let editingId = "";
+
+function logout(){localStorage.removeItem("usuario");localStorage.removeItem("rol");localStorage.removeItem("empresa");window.location.href="index.html"}
+function guard(){if(!localStorage.getItem("usuario")) window.location.href="index.html";}
+function decodeEmpresa_(raw){
+  let s = String(raw || "").trim();
+  if(!s) return "";
+  // Evita doble/triple-encode cuando `empresa` queda guardada como URL-encoded
+  // (ej: "Sede%20principal" o "Sede%2520principal").
+  s = s.replace(/\+/g," ");
+  for(let i=0;i<3 && /%[0-9a-fA-F]{2}/.test(s);i++){
+    try{
+      const decoded = decodeURIComponent(s);
+      if(decoded === s) break;
+      s = decoded;
+    }catch(_){
+      break;
+    }
+  }
+  return String(s || "").trim();
+}
+
+function cancelEdit(){
+  editingId = "";
+  document.getElementById("cNombre").value = "";
+  document.getElementById("cDoc").value = "";
+  document.getElementById("cTel").value = "";
+  document.getElementById("cMail").value = "";
+  document.getElementById("cEstado").value = "Activo";
+  document.getElementById("btnSave").textContent = "Guardar";
+  document.getElementById("btnCancel").style.display = "none";
+  document.getElementById("formMsg").textContent = "";
+}
+
+async function saveClient(){
+  const payload = {
+    action: editingId ? "update_client" : "add_client",
+    empresa: decodeEmpresa_(localStorage.getItem("empresa") || ""),
+    id_cliente: editingId,
+    nombre: document.getElementById("cNombre").value.trim(),
+    documento: document.getElementById("cDoc").value.trim(),
+    telefono: document.getElementById("cTel").value.trim(),
+    email: document.getElementById("cMail").value.trim(),
+    estado: document.getElementById("cEstado").value
+  };
+  if(!payload.nombre){document.getElementById("formMsg").textContent="Nombre es obligatorio.";return;}
+  try{
+    const res = await fetch(`${API_URL}?${new URLSearchParams(payload).toString()}`, {cache:"no-store"});
+    const data = await res.json();
+    if(!data.ok){document.getElementById("formMsg").textContent = data.error || "No se pudo guardar."; return;}
+    document.getElementById("formMsg").textContent = editingId ? "Cliente actualizado." : "Cliente agregado.";
+    cancelEdit();
+    await loadClients();
+  }catch(e){
+    document.getElementById("formMsg").textContent = "Error al guardar.";
+  }
+}
+
+function editClient(id){
+  const c = current.find(x => x.id_cliente === id);
+  if(!c) return;
+  editingId = c.id_cliente;
+  document.getElementById("cNombre").value = c.nombre || "";
+  document.getElementById("cDoc").value = c.documento || "";
+  document.getElementById("cTel").value = c.telefono || "";
+  document.getElementById("cMail").value = c.email || "";
+  document.getElementById("cEstado").value = c.estado || "Activo";
+  document.getElementById("btnSave").textContent = "Guardar cambios";
+  document.getElementById("btnCancel").style.display = "inline-block";
+}
+
+async function deleteClient(id){
+  if(!confirm("Eliminar cliente?")) return;
+  try{
+    const res = await fetch(`${API_URL}?action=delete_client&id_cliente=${encodeURIComponent(id)}`, {cache:"no-store"});
+    const data = await res.json();
+    if(!data.ok){alert(data.error || "No se pudo eliminar"); return;}
+    await loadClients();
+  }catch(e){ alert("Error al eliminar"); }
+}
+
+async function loadClients(){
+  const sync = document.getElementById("sync");
+  try{
+    const empresa = encodeURIComponent(decodeEmpresa_(localStorage.getItem("empresa") || ""));
+    const res = await fetch(`${API_URL}?action=clients&empresa=${empresa}`, {cache:"no-store"});
+    const data = await res.json();
+    current = (data && data.rows) ? data.rows : [];
+    renderClients();
+    sync.textContent = `Ultima sincronizacion: ${new Date().toLocaleTimeString("es-CO")}`;
+  }catch(e){
+    sync.textContent = "No se pudo sincronizar.";
+  }
+}
+
+function getFilteredClients(){
+  const q = String(document.getElementById("qSearch").value || "").trim().toLowerCase();
+  const estado = String(document.getElementById("qEstado").value || "").trim().toLowerCase();
+  return current.filter(c => {
+    const text = `${c.nombre || ""} ${c.documento || ""} ${c.telefono || ""} ${c.email || ""}`.toLowerCase();
+    const okSearch = !q || text.includes(q);
+    const okEstado = !estado || String(c.estado || "").toLowerCase() === estado;
+    return okSearch && okEstado;
+  });
+}
+
+function renderClients(){
+  const list = getFilteredClients();
+  const tbody = document.getElementById("rows");
+  tbody.innerHTML = "";
+  list.forEach(c => {
+    const id = String(c.id_cliente || "").replace(/'/g, "\\'");
+    tbody.innerHTML += `<tr><td>${c.nombre || "-"}</td><td>${c.documento || "-"}</td><td>${c.telefono || "-"}</td><td>${c.email || "-"}</td><td>${c.estado || "-"}</td><td><button class='btn save' style='padding:6px' onclick=\"editClient('${id}')\">Editar</button> <button class='btn del' style='padding:6px' onclick=\"deleteClient('${id}')\">Eliminar</button></td></tr>`;
+  });
+  if(!list.length) tbody.innerHTML = "<tr><td colspan='6'>Sin clientes.</td></tr>";
+}
+
+function exportClientsCSV(){
+  const list = getFilteredClients();
+  const header = ["id_cliente","nombre","documento","telefono","email","estado"];
+  const lines = [header.join(",")];
+  list.forEach(c => {
+    const row = header.map(k => `"${String(c[k] || "").replace(/"/g,'""')}"`);
+    lines.push(row.join(","));
+  });
+  const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8;" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "clientes.csv";
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+guard();
+loadClients();
+
+function toggleSidebar(forceOpen){
+  const layout=document.querySelector(".layout");
+  if(!layout) return;
+  if(typeof forceOpen === "boolean") layout.classList.toggle("sidebar-open", forceOpen);
+  else layout.classList.toggle("sidebar-open");
+}
+window.addEventListener("resize",()=>{ if(window.innerWidth>860) toggleSidebar(false); });
+document.querySelectorAll(".menu a").forEach(a=>a.addEventListener("click",()=>{ if(window.innerWidth<=860) toggleSidebar(false); }));
+</script>
+</body>
+</html>
+
+
+
+

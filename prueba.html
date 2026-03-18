@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+<meta charset="UTF-8">
+<title>Factura FERRO MAYA</title>
+
+<style>
+
+/* CONFIGURACIÓN IMPRESORA POS */
+@page{
+size:80mm auto;
+margin:0;
+}
+
+body{
+font-family:monospace;
+background:#f4f4f4;
+}
+
+/* SOLO AL IMPRIMIR */
+@media print{
+body{background:white;}
+
+.ticket{
+width:80mm;
+border:none;
+margin:0;
+padding:5mm;
+}
+
+button{
+display:none;
+}
+}
+
+.ticket{
+width:430px;
+min-height:650px;
+background:white;
+margin:auto;
+padding:18px;
+border:3px solid black;
+font-size:13px;
+}
+
+.center{text-align:center;}
+.right{text-align:right;}
+.bold{font-weight:bold;}
+.big{font-size:19px;font-weight:bold;}
+
+hr{
+border:0;
+border-top:2px dashed black;
+margin:8px 0;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+font-size:13px;
+}
+
+th,td{
+padding:5px;
+}
+
+th{
+border-bottom:2px solid black;
+}
+
+input{
+border:none;
+border-bottom:1px solid black;
+font-family:monospace;
+font-size:13px;
+width:100%;
+}
+
+input:focus{
+outline:none;
+}
+
+button{
+margin-top:10px;
+padding:8px;
+width:100%;
+font-weight:bold;
+border:2px solid black;
+background:white;
+cursor:pointer;
+}
+
+
+</style>
+</head>
+
+<body>
+
+<div class="ticket">
+
+<div class="center bold" style="font-size:16px;">FERRO MAYA</div>
+<div class="center">IVA REGIMEN COMUN NIT. 10035427599-1</div>
+<div class="center">RESOLUCION DIAN 110000594534</div>
+<div class="center">DEL 09/09/2014 1 AL 2000</div>
+<div class="center">CALLE 41 # 41 - 11 ZARAGOZA</div>
+<div class="center">ANTIOQUIA</div>
+<br>
+<div class="center">CELULAR 310 531 8415</div>
+<div class="center">EMAIL: facturasferromaya@gmail.com</div>
+
+<hr>
+
+<div>NIT O CC: 1 - MOSTRADOR</div>
+<div>TELEFONO: 0000000000</div>
+<div>DIRECCION: MOSTRADOR</div>
+<div>CAJERO: YOHAN ALEXANDER PAREJA</div>
+
+<div class="bold">
+FACTURA DE VENTA - FECHA: <span id="fecha"></span>
+</div>
+
+<div>446 &nbsp;&nbsp; DEV: 09:20</div>
+
+<hr>
+
+<table>
+<thead>
+<tr>
+<th>DESCRIPCION</th>
+<th>CAN</th>
+<th>VAL U</th>
+<th class="right">SUBT</th>
+</tr>
+</thead>
+
+<tbody id="tabla"></tbody>
+
+</table>
+
+<hr>
+
+<div>DESCUENTO: 0</div>
+<div class="right">SUBTOTAL: <span id="subtotal">0</span></div>
+<div class="right">IVA (19%): <span id="iva">0</span></div>
+
+<div class="big right">
+TOTAL: <span id="total">0</span>
+</div>
+
+<div class="big right">
+PAGO: <input type="number" id="pago">
+</div>
+
+<div class="big right">
+CAMBIO: <span id="cambio">0</span>
+</div>
+
+<hr>
+
+<div class="center bold">INFORMACION TRIBUTARIA</div>
+
+<div>% IC &nbsp;&nbsp;&nbsp;&nbsp; BASE &nbsp;&nbsp;&nbsp;&nbsp; $ IC</div>
+
+<div class="right">
+19% &nbsp;&nbsp;
+<span id="baseTributaria">0</span>
+&nbsp;&nbsp;
+<span id="ivaTributaria">0</span>
+</div>
+
+<hr>
+
+<div>OBS:</div>
+<br><br>
+
+<hr>
+
+<div class="center">GRACIAS POR SU COMPRA</div>
+
+<button onclick="agregar()">Agregar Producto</button>
+<button onclick="prepararImpresion()">Imprimir</button>
+
+</div>
+
+<script>
+
+/* FECHA AUTOMATICA */
+function formatearFecha(){
+
+const ahora = new Date()
+
+const año = ahora.getFullYear()
+const mes = String(ahora.getMonth()+1).padStart(2,'0')
+const dia = String(ahora.getDate()).padStart(2,'0')
+
+const hora = String(ahora.getHours()).padStart(2,'0')
+const min = String(ahora.getMinutes()).padStart(2,'0')
+
+return `${año}/${mes}/${dia} ${hora}:${min}`
+
+}
+
+document.getElementById("fecha").innerText = formatearFecha()
+
+
+
+/* AGREGAR PRODUCTO */
+
+function agregar(){
+
+let fila = `
+<tr>
+
+<td>
+<input class="desc">
+</td>
+
+<td>
+<input type="number" class="cant" value="1">
+</td>
+
+<td>
+<input type="number" class="val" value="0">
+</td>
+
+<td class="right subtotal">0</td>
+
+</tr>
+`
+
+document.getElementById("tabla").insertAdjacentHTML("beforeend",fila)
+
+}
+
+
+
+/* CALCULAR */
+
+document.addEventListener("input",calcular)
+
+function calcular(){
+
+let cant = document.querySelectorAll(".cant")
+let val = document.querySelectorAll(".val")
+let subt = document.querySelectorAll(".subtotal")
+
+let subtotalGeneral = 0
+
+cant.forEach((c,i)=>{
+
+let cantidad = Number(c.value) || 0
+let valor = Number(val[i].value) || 0
+
+let sub = cantidad * valor
+
+subt[i].innerText = sub.toLocaleString()
+
+subtotalGeneral += sub
+
+})
+
+let iva = subtotalGeneral * 0.19
+let total = subtotalGeneral + iva
+
+document.getElementById("subtotal").innerText = subtotalGeneral.toLocaleString()
+document.getElementById("iva").innerText = iva.toLocaleString()
+document.getElementById("total").innerText = total.toLocaleString()
+
+document.getElementById("baseTributaria").innerText = subtotalGeneral.toLocaleString()
+document.getElementById("ivaTributaria").innerText = iva.toLocaleString()
+
+let pago = Number(document.getElementById("pago").value) || 0
+
+let cambio = pago - total
+
+document.getElementById("cambio").innerText = cambio.toLocaleString()
+
+}
+
+
+
+/* PREPARAR IMPRESION */
+
+function prepararImpresion(){
+
+document.querySelectorAll("input").forEach(input=>{
+
+let span = document.createElement("span")
+
+span.innerText = input.value
+
+input.parentNode.replaceChild(span,input)
+
+})
+
+window.print()
+
+}
+
+</script>
+
+</body>
+</html>

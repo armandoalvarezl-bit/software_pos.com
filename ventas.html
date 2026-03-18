@@ -1,0 +1,155 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ventas | FarmaPOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+:root{--bg:#ecfdf5;--panel:#fff;--line:#d1fae5;--ink:#0f172a;--muted:#64748b;--brand:#065f46}
+*{box-sizing:border-box;margin:0;padding:0;font-family:"Poppins",sans-serif}
+body{background:var(--bg);color:var(--ink)}
+.layout{display:grid;grid-template-columns:270px 1fr;min-height:100vh}
+.sidebar{background:radial-gradient(circle at 22% 18%,#ffffff1c 0%,transparent 30%),linear-gradient(180deg,#064e3b 0%,#03392d 54%,#022c22 100%);color:#ecfdf5;padding:22px 16px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.brand{font-weight:700;font-size:1.2rem;margin-bottom:26px;display:flex;gap:10px;align-items:center}.brand-logo{width:36px;height:36px;border-radius:10px;object-fit:contain;background:rgba(255,255,255,0.16);padding:4px;}
+.brand i{background:rgba(255,255,255,.16);width:34px;height:34px;border-radius:10px;display:grid;place-items:center}
+.menu a {display:flex;align-items:center;gap:10px;color:#d1fae5;text-decoration:none;padding:10px 12px;border-radius:11px;margin-bottom:6px;transition:
+background.2s,color .2s,transform .2s;font-size:.94rem}
+.menu a:hover,.menu a.active{background:rgba(255,255,255,.12);color:#fff;transform:translateX(2px)}
+.main{padding:24px}
+.top{display:flex;justify-content:space-between;align-items:center;background:var(--panel);border:1px solid var(--line);padding:14px;border-radius:12px;margin-bottom:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
+.kpi{font-size:1.4rem;font-weight:700}
+.table{width:100%;border-collapse:collapse;margin-top:10px}
+.table th,.table td{padding:10px 6px;border-bottom:1px solid #ecfeff;text-align:left;font-size:.9rem}
+.badge{font-size:.75rem;border-radius:99px;padding:4px 8px;background:#dcfce7;color:#166534}
+.logout{border:1px solid #bbf7d0;background:#f0fdf4;color:var(--brand);padding:7px 10px;border-radius:8px;cursor:pointer}
+.menu-toggle{display:none;border:1px solid #cdeee2;background:#fff;color:#065f46;border-radius:8px;padding:6px 9px;cursor:pointer}
+.sidebar-overlay{display:none}
+
+@media(max-width:860px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{display:block;position:fixed;left:0;top:0;bottom:0;width:270px;z-index:50;transform:translateX(-110%);transition:transform .2s ease;box-shadow:0 18px 60px rgba(2,44,34,.22)}
+  .menu-toggle{display:inline-flex;align-items:center;justify-content:center}
+  .sidebar-overlay{display:block;position:fixed;inset:0;background:rgba(2,44,34,.35);backdrop-filter:blur(2px);z-index:40;opacity:0;pointer-events:none;transition:opacity .2s ease}
+  .layout.sidebar-open .sidebar{transform:translateX(0)}
+  .layout.sidebar-open .sidebar-overlay{opacity:1;pointer-events:auto}
+  .grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">
+  <img src="logo.png" alt="Logo" class="brand-logo" onerror="this.style.display='none'">
+  <div class="brand-name">FarmaPOS</div>
+</div>
+  <nav class="menu">
+    <a href="dashboard.html"><i class="bi bi-speedometer2"></i> Dashboard</a>
+    <a href="ventas.html" class="active"><i class="bi bi-cart-plus"></i> Ventas</a>
+    <a href="inventario.html"><i class="bi bi-box-seam"></i> Inventario</a>
+    <a href="reportes.html"><i class="bi bi-file-earmark-bar-graph"></i> Reportes</a>
+  </nav>
+</aside>
+<div class="sidebar-overlay" onclick="toggleSidebar(false)"></div>
+<main class="main">
+  <section class="top">
+    <button class="menu-toggle" type="button" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+    <div>
+      <div style="font-weight:600">Modulo de ventas</div>
+      <div id="sync" style="font-size:.8rem;color:var(--muted)">Sincronizando...</div>
+    </div>
+    <div>
+      <button class="logout" onclick="logout()">Cerrar sesion</button>
+    </div>
+  </section>
+  <section class="card" style="margin-bottom:12px;display:flex;justify-content:space-between;align-items:center">
+    <div>
+      <div style="font-size:.85rem;color:var(--muted)">Total vendido hoy</div>
+      <div class="kpi" id="salesTotal">$0</div>
+    </div>
+    <div class="badge" id="tickets">0 tickets</div>
+  </section>
+  <section class="card">
+    <div style="font-weight:600">Ultimas ventas</div>
+    <table class="table">
+      <thead><tr><th>Fecha</th><th>ID venta</th><th>Cliente</th><th>Pago</th><th>Total</th></tr></thead>
+      <tbody id="salesRows"></tbody>
+    </table>
+  </section>
+</main>
+</div>
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycby9Rf23ERVyl9LwZvQBycddgtxyyx3R8OsqlX0Fyyr7hKuYqnKnEJTGDXH72HyFsrSg/exec";
+const fallback = {
+  totalToday: 2485000,
+  ticketsToday: 146,
+  rows: [
+    { fecha: "2026-02-27", id_venta: "V-1901", cliente: "Mostrador", metodo_pago: "Efectivo", total: 24000 },
+    { fecha: "2026-02-27", id_venta: "V-1902", cliente: "Ana Ruiz", metodo_pago: "Tarjeta", total: 68500 },
+    { fecha: "2026-02-27", id_venta: "V-1903", cliente: "Carlos M", metodo_pago: "Transferencia", total: 17500 }
+  ]
+};
+function money(v){return "$"+Number(v||0).toLocaleString("es-CO")}
+function logout(){localStorage.removeItem("usuario");localStorage.removeItem("rol");localStorage.removeItem("empresa");window.location.href="index.html"}
+function guard(){if(!localStorage.getItem("usuario")){window.location.href="index.html"}}
+function decodeEmpresa_(raw){
+  let s = String(raw || "").trim();
+  if(!s) return "";
+  // Evita doble/triple-encode cuando `empresa` queda guardada como URL-encoded
+  // (ej: "Sede%20principal" o "Sede%2520principal").
+  s = s.replace(/\+/g," ");
+  for(let i=0;i<3 && /%[0-9a-fA-F]{2}/.test(s);i++){
+    try{
+      const decoded = decodeURIComponent(s);
+      if(decoded === s) break;
+      s = decoded;
+    }catch(_){
+      break;
+    }
+  }
+  return String(s || "").trim();
+}
+function render(data){
+  document.getElementById("salesTotal").textContent=money(data.totalToday);
+  document.getElementById("tickets").textContent=`${Number(data.ticketsToday||0).toLocaleString("es-CO")} tickets`;
+  const tbody=document.getElementById("salesRows");
+  tbody.innerHTML="";
+  (data.rows||[]).forEach(r=>{
+    tbody.innerHTML += `<tr><td>${r.fecha||"-"}</td><td>${r.id_venta||"-"}</td><td>${r.cliente||"-"}</td><td>${r.metodo_pago||"-"}</td><td>${money(r.total)}</td></tr>`;
+  });
+  if(!(data.rows||[]).length){tbody.innerHTML="<tr><td colspan='5'>Sin ventas registradas.</td></tr>"}
+}
+async function loadSales(){
+  const sync=document.getElementById("sync");
+  const empresa=encodeURIComponent(decodeEmpresa_(localStorage.getItem("empresa")||""));
+  try{
+    const res=await fetch(`${API_URL}?action=sales&empresa=${empresa}`,{cache:"no-store"});
+    if(!res.ok) throw new Error("bad response");
+    const data=await res.json();
+    render(data && data.rows ? data : fallback);
+    sync.textContent=`Ultima sincronizacion: ${new Date().toLocaleTimeString("es-CO")}`;
+  }catch(e){
+    render(fallback);
+    sync.textContent="Modo local: sin conexion con la nube";
+  }
+}
+guard();
+loadSales();
+
+function toggleSidebar(forceOpen){
+  const layout=document.querySelector(".layout");
+  if(!layout) return;
+  if(typeof forceOpen === "boolean") layout.classList.toggle("sidebar-open", forceOpen);
+  else layout.classList.toggle("sidebar-open");
+}
+window.addEventListener("resize",()=>{ if(window.innerWidth>860) toggleSidebar(false); });
+document.querySelectorAll(".menu a").forEach(a=>a.addEventListener("click",()=>{ if(window.innerWidth<=860) toggleSidebar(false); }));
+</script>
+</body>
+</html>
+

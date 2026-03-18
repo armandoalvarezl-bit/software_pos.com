@@ -1,0 +1,213 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Configuracion | FarmaPOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<link rel="icon" type="image/png" href="favicon.png">
+<style>
+:root{--bg:#ecfdf5;--panel:#fff;--line:#d1fae5;--ink:#0f172a;--muted:#64748b;--brand:#065f46}
+*{box-sizing:border-box;margin:0;padding:0;font-family:"Poppins",sans-serif}
+body{background:var(--bg);color:var(--ink)}
+.layout{display:grid;grid-template-columns:270px 1fr;min-height:100vh}
+.sidebar{background:linear-gradient(180deg,#064e3b 0%,#022c22 100%);color:#ecfdf5;padding:24px 18px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.brand{font-weight:700;font-size:1.2rem;margin-bottom:24px;display:flex;gap:10px;align-items:center}
+.menu a{display:flex;align-items:center;gap:10px;color:#d1fae5;text-decoration:none;padding:10px 12px;border-radius:11px;margin-bottom:6px;transition:background .2s,color .2s,transform .2s;font-size:.94rem}
+.menu a.active,.menu a:hover{background:rgba(255,255,255,.13);color:#fff}
+.main{padding:24px}
+.top{display:flex;justify-content:space-between;align-items:center;background:var(--panel);border:1px solid var(--line);padding:14px;border-radius:12px;margin-bottom:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(180px,1fr));gap:10px}
+.input,.textarea{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px}
+.textarea{min-height:70px;resize:vertical}
+.btn{border:none;border-radius:8px;padding:10px;cursor:pointer}
+.btn.save{background:#065f46;color:#fff}.btn.alt{background:#e2e8f0}
+.msg{margin-top:10px;font-size:.85rem;color:var(--muted);min-height:16px}
+.logout{border:1px solid #bbf7d0;background:#f0fdf4;color:var(--brand);padding:7px 10px;border-radius:8px;cursor:pointer}
+@media(max-width:1100px){.layout{grid-template-columns:1fr}
+}
+.menu-toggle{display:none;border:1px solid #cdeee2;background:#fff;color:#065f46;border-radius:8px;padding:6px 9px;cursor:pointer}
+.sidebar-overlay{display:none}
+
+@media(max-width:860px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{display:block;position:fixed;left:0;top:0;bottom:0;width:270px;z-index:50;transform:translateX(-110%);transition:transform .2s ease;box-shadow:0 18px 60px rgba(2,44,34,.22)}
+  .menu-toggle{display:inline-flex;align-items:center;justify-content:center}
+  .sidebar-overlay{display:block;position:fixed;inset:0;background:rgba(2,44,34,.35);backdrop-filter:inherit;z-index:40;opacity:0;pointer-events:none;transition:opacity .2s ease}
+  .layout.sidebar-open .sidebar{transform:translateX(0)}
+  .layout.sidebar-open .sidebar-overlay{opacity:1;pointer-events:auto}
+  .grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand"><i class="bi bi-capsule-pill"></i> FarmaPOS</div>
+  <nav class="menu">
+    <a href="dashboard.html"><i class="bi bi-speedometer2"></i> Dashboard</a>
+    <a href="pos.html"><i class="bi bi-cart-plus"></i> Ventas POS</a>
+    <a href="inventario.html"><i class="bi bi-box-seam"></i> Inventario</a>
+    <a href="pedidos.html"><i class="bi bi-truck"></i> Proveedores</a>
+    <a href="clientes.html"><i class="bi bi-people"></i> Clientes</a>
+    <a href="recetas.html"><i class="bi bi-clipboard2-pulse"></i> Recetas</a>
+    <a href="reportes.html"><i class="bi bi-file-earmark-bar-graph"></i> Reportes</a>
+    <a href="configuracion.html" class="active"><i class="bi bi-gear"></i> Configuracion</a>
+  </nav>
+</aside>
+<div class="sidebar-overlay" onclick="toggleSidebar(false)"></div>
+<main class="main">
+  <section class="top">
+    <button class="menu-toggle" type="button" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+    <div>
+      <div style="font-weight:600">Configuracion general</div>
+      <div id="sync" style="font-size:.8rem;color:var(--muted)">Cargando...</div>
+    </div>
+    <button class="logout" onclick="logout()">Cerrar sesion</button>
+  </section>
+
+  <section class="card">
+    <div class="grid">
+      <div><label>Empresa</label><input class="input" id="empresa" readonly></div>
+      <div><label>Nombre empresa</label><input class="input" id="nombre_empresa" placeholder="Nombre comercial"></div>
+      <div><label>NIT</label><input class="input" id="nit" placeholder="NIT"></div>
+      <div><label>Telefono</label><input class="input" id="telefono" placeholder="Telefono"></div>
+      <div><label>Email</label><input class="input" id="email" placeholder="Email"></div>
+      <div><label>Direccion</label><input class="input" id="direccion" placeholder="Direccion"></div>
+      <div><label>IVA %</label><input class="input" id="iva_porcentaje" type="number" min="0" step="0.01" placeholder="0"></div>
+      <div><label>Stock minimo default</label><input class="input" id="stock_min_default" type="number" min="0" step="1" placeholder="0"></div>
+      <div><label>Caja activa</label><input class="input" id="caja_activa" placeholder="Caja #1"></div>
+      <div><label>Web App URL</label><input class="input" id="webapp_url" readonly></div>
+    </div>
+    <div style="margin-top:10px">
+      <label>Nota de ticket</label>
+      <textarea class="textarea" id="nota_ticket" placeholder="Gracias por su compra"></textarea>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button class="btn save" onclick="saveSettings()">Guardar configuracion</button>
+      <button class="btn alt" onclick="loadSettings()">Recargar</button>
+    </div>
+    <div class="msg" id="msg"></div>
+  </section>
+</main>
+</div>
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycby9Rf23ERVyl9LwZvQBycddgtxyyx3R8OsqlX0Fyyr7hKuYqnKnEJTGDXH72HyFsrSg/exec";
+
+function logout(){localStorage.removeItem("usuario");localStorage.removeItem("rol");localStorage.removeItem("empresa");window.location.href="index.html";}
+function guard(){if(!localStorage.getItem("usuario")) window.location.href="index.html";}
+function decodeEmpresa_(raw){
+  let s = String(raw || "").trim();
+  if(!s) return "";
+  // Evita doble/triple-encode cuando `empresa` queda guardada como URL-encoded
+  // (ej: "Sede%20principal" o "Sede%2520principal").
+  s = s.replace(/\+/g," ");
+  for(let i=0;i<3 && /%[0-9a-fA-F]{2}/.test(s);i++){
+    try{
+      const decoded = decodeURIComponent(s);
+      if(decoded === s) break;
+      s = decoded;
+    }catch(_){
+      break;
+    }
+  }
+  return String(s || "").trim();
+}
+
+function setForm(v){
+  document.getElementById("empresa").value = v.empresa || "";
+  document.getElementById("nombre_empresa").value = v.nombre_empresa || "";
+  document.getElementById("nit").value = v.nit || "";
+  document.getElementById("telefono").value = v.telefono || "";
+  document.getElementById("email").value = v.email || "";
+  document.getElementById("direccion").value = v.direccion || "";
+  document.getElementById("iva_porcentaje").value = Number(v.iva_porcentaje || 0);
+  document.getElementById("stock_min_default").value = Number(v.stock_min_default || 0);
+  document.getElementById("caja_activa").value = v.caja_activa || "Caja #1";
+  document.getElementById("nota_ticket").value = v.nota_ticket || "Gracias por su compra";
+  document.getElementById("webapp_url").value = API_URL;
+}
+
+function getForm(){
+  return {
+    empresa: document.getElementById("empresa").value.trim(),
+    nombre_empresa: document.getElementById("nombre_empresa").value.trim(),
+    nit: document.getElementById("nit").value.trim(),
+    telefono: document.getElementById("telefono").value.trim(),
+    email: document.getElementById("email").value.trim(),
+    direccion: document.getElementById("direccion").value.trim(),
+    iva_porcentaje: Number(document.getElementById("iva_porcentaje").value || 0),
+    stock_min_default: Number(document.getElementById("stock_min_default").value || 0),
+    caja_activa: document.getElementById("caja_activa").value.trim(),
+    nota_ticket: document.getElementById("nota_ticket").value.trim()
+  };
+}
+
+async function loadSettings(){
+  const empresa = decodeEmpresa_(localStorage.getItem("empresa") || "general");
+  document.getElementById("sync").textContent = "Consultando configuracion...";
+  document.getElementById("empresa").value = empresa;
+  try{
+    const res = await fetch(`${API_URL}?action=settings&empresa=${encodeURIComponent(empresa)}`, {cache:"no-store"});
+    const data = await res.json();
+    if(data && data.ok && data.settings){
+      setForm(data.settings);
+      localStorage.setItem("app_settings", JSON.stringify(data.settings));
+      document.getElementById("sync").textContent = `Sincronizado: ${new Date().toLocaleTimeString("es-CO")}`;
+      return;
+    }
+    throw new Error("respuesta invalida");
+  }catch(e){
+    const local = localStorage.getItem("app_settings");
+    if(local){
+      setForm(JSON.parse(local));
+      document.getElementById("sync").textContent = "Modo local (sin nube)";
+    }else{
+      setForm({empresa:empresa});
+      document.getElementById("sync").textContent = "Sin datos de configuracion";
+    }
+  }
+}
+
+async function saveSettings(){
+  const msg = document.getElementById("msg");
+  const payload = getForm();
+  if(!payload.empresa){ msg.textContent = "Empresa es obligatoria."; return; }
+  msg.textContent = "Guardando...";
+  try{
+    const qs = new URLSearchParams({ action:"save_settings", ...payload });
+    const res = await fetch(`${API_URL}?${qs.toString()}`, {cache:"no-store"});
+    const data = await res.json();
+    if(!data.ok){ msg.textContent = data.error || "No se pudo guardar."; return; }
+    localStorage.setItem("app_settings", JSON.stringify(payload));
+    msg.textContent = "Configuracion guardada correctamente.";
+    document.getElementById("sync").textContent = `Actualizado: ${new Date().toLocaleTimeString("es-CO")}`;
+  }catch(e){
+    localStorage.setItem("app_settings", JSON.stringify(payload));
+    msg.textContent = "Guardado local (sin nube).";
+    document.getElementById("sync").textContent = "Modo local";
+  }
+}
+
+guard();
+loadSettings();
+
+function toggleSidebar(forceOpen){
+  const layout=document.querySelector(".layout");
+  if(!layout) return;
+  if(typeof forceOpen === "boolean") layout.classList.toggle("sidebar-open", forceOpen);
+  else layout.classList.toggle("sidebar-open");
+}
+window.addEventListener("resize",()=>{ if(window.innerWidth>860) toggleSidebar(false); });
+document.querySelectorAll(".menu a").forEach(a=>a.addEventListener("click",()=>{ if(window.innerWidth<=860) toggleSidebar(false); }));
+</script>
+</body>
+</html>
+
+
+
+

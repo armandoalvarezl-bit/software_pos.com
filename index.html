@@ -1,0 +1,1067 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FarmaPOS Cloud</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<link rel="icon" type="image/png" href="favicon.png">
+
+<style>
+:root{
+--bg:#156a5f;
+--bg-2:#0f5b52;
+--card:#f8fbff;
+--ink:#0b1220;
+--muted:#64748b;
+--line:#d7e0eb;
+--brand:#0aa28a;
+--brand-2:#07816f;
+--focus:rgba(10,162,138,.24);
+--shadow:0 26px 70px rgba(2,6,23,.28);
+}
+
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+html,body{height:100%;}
+
+body{
+min-height:100vh;
+margin:0;
+display:grid;
+place-items:center;
+padding:22px 18px;
+background:
+radial-gradient(1000px 560px at 12% 18%, rgba(34,211,153,.22) 0%, transparent 54%),
+radial-gradient(860px 520px at 92% 10%, rgba(45,212,191,.22) 0%, transparent 56%),
+linear-gradient(135deg, var(--bg) 0%, var(--bg-2) 100%);
+color:var(--ink);
+line-height:1.35;
+overflow-x:hidden;
+overflow-y:auto;
+}
+
+.stage{
+position:fixed;
+inset:0;
+z-index:0;
+pointer-events:none;
+overflow:hidden;
+}
+
+.stage::before{
+content:'';
+position:absolute;
+inset:-20%;
+background:
+radial-gradient(circle at 22% 18%, rgba(255,255,255,.12) 0%, transparent 38%),
+radial-gradient(circle at 84% 14%, rgba(255,255,255,.10) 0%, transparent 34%),
+radial-gradient(circle at 82% 86%, rgba(255,255,255,.10) 0%, transparent 36%),
+linear-gradient(180deg, rgba(2,6,23,.10) 0%, rgba(2,6,23,0) 55%, rgba(2,6,23,.18) 100%);
+}
+
+.decor{position:absolute;filter:drop-shadow(0 22px 24px rgba(2,6,23,.35));opacity:.98;transform-origin:center;}
+
+.decor-tablet{
+right:54px;
+top:40px;
+width:320px;
+height:240px;
+transform:rotate(11deg);
+border-radius:30px;
+background:linear-gradient(135deg,#111827,#0b1220);
+box-shadow:inset 0 0 0 2px rgba(255,255,255,.08);
+}
+
+.decor-tablet::before{
+content:'';
+position:absolute;
+inset:18px;
+border-radius:20px;
+background:
+linear-gradient(90deg, rgba(10,162,138,.88) 0 0) 18px 18px/160px 16px no-repeat,
+linear-gradient(90deg, rgba(148,163,184,.55) 0 0) 18px 44px/252px 10px no-repeat,
+linear-gradient(90deg, rgba(148,163,184,.50) 0 0) 18px 62px/220px 10px no-repeat,
+linear-gradient(90deg, rgba(148,163,184,.45) 0 0) 18px 80px/190px 10px no-repeat,
+linear-gradient(135deg,#f1f5f9,#e2e8f0);
+}
+
+.decor-tablet::after{
+content:'';
+position:absolute;
+left:36px;
+right:36px;
+bottom:32px;
+height:76px;
+border-radius:18px;
+background:
+linear-gradient(#ffffff,#ffffff) 0 0/100% 100% no-repeat,
+linear-gradient(90deg, rgba(14,165,233,.55) 0 0) 18px 18px/64px 10px no-repeat,
+linear-gradient(90deg, rgba(34,197,94,.55) 0 0) 98px 18px/64px 10px no-repeat,
+linear-gradient(90deg, rgba(249,115,22,.55) 0 0) 178px 18px/64px 10px no-repeat;
+box-shadow:inset 0 0 0 1px rgba(203,213,225,.85);
+opacity:.96;
+}
+
+.decor-monitor{
+right:84px;
+bottom:34px;
+width:400px;
+height:260px;
+transform:rotate(-4deg);
+border-radius:26px;
+background:linear-gradient(135deg,#0b1220,#111827);
+box-shadow:inset 0 0 0 2px rgba(255,255,255,.08);
+}
+
+.decor-monitor::before{
+content:'';
+position:absolute;
+inset:18px 18px 44px 18px;
+border-radius:18px;
+background:
+linear-gradient(90deg, rgba(10,162,138,.88) 0 0) 18px 18px/180px 16px no-repeat,
+linear-gradient(90deg, rgba(148,163,184,.55) 0 0) 18px 44px/290px 10px no-repeat,
+linear-gradient(90deg, rgba(148,163,184,.52) 0 0) 18px 62px/268px 10px no-repeat,
+linear-gradient(90deg, rgba(148,163,184,.48) 0 0) 18px 80px/210px 10px no-repeat,
+linear-gradient(90deg, rgba(34,197,94,.68) 0 0) 18px 116px/80px 34px no-repeat,
+linear-gradient(90deg, rgba(14,165,233,.62) 0 0) 106px 116px/80px 34px no-repeat,
+linear-gradient(90deg, rgba(249,115,22,.62) 0 0) 194px 116px/80px 34px no-repeat,
+linear-gradient(135deg,#f1f5f9,#e2e8f0);
+}
+
+.decor-monitor::after{
+content:'';
+position:absolute;
+left:50%;
+bottom:-18px;
+width:190px;
+height:44px;
+transform:translateX(-50%);
+border-radius:16px;
+background:linear-gradient(135deg,#334155,#475569);
+box-shadow:0 14px 18px rgba(2,6,23,.18);
+}
+
+.decor-phone{
+left:92px;
+bottom:24px;
+width:230px;
+height:300px;
+transform:rotate(-10deg);
+border-radius:32px;
+background:linear-gradient(135deg,#0f172a,#111827);
+box-shadow:inset 0 0 0 2px rgba(255,255,255,.08);
+}
+
+.decor-phone::before{
+content:'';
+position:absolute;
+inset:22px 18px 30px 18px;
+border-radius:22px;
+background:
+linear-gradient(90deg, rgba(10,162,138,.85) 0 0) 14px 16px/136px 14px no-repeat,
+linear-gradient(90deg, rgba(34,197,94,.75) 0 0) 14px 38px/136px 14px no-repeat,
+linear-gradient(90deg, rgba(249,115,22,.75) 0 0) 14px 60px/136px 14px no-repeat,
+linear-gradient(90deg, rgba(239,68,68,.72) 0 0) 14px 82px/136px 14px no-repeat,
+linear-gradient(90deg, rgba(14,165,233,.70) 0 0) 14px 104px/136px 14px no-repeat,
+linear-gradient(135deg,#f1f5f9,#e2e8f0);
+}
+
+.decor-phone::after{
+content:'';
+position:absolute;
+left:50%;
+top:14px;
+width:88px;
+height:7px;
+transform:translateX(-50%);
+border-radius:999px;
+background:rgba(148,163,184,.55);
+}
+
+.decor-printer{
+left:44px;
+top:300px;
+width:240px;
+height:180px;
+transform:rotate(-3deg);
+border-radius:18px;
+background:linear-gradient(135deg,#f8fafc,#cbd5e1);
+box-shadow:inset 0 0 0 2px rgba(100,116,139,.24);
+}
+
+.decor-printer::before{
+content:'';
+position:absolute;
+left:18px;
+right:18px;
+top:18px;
+height:58px;
+border-radius:14px;
+background:rgba(14,165,233,.18);
+}
+
+.decor-printer::after{
+content:'';
+position:absolute;
+left:48px;
+right:48px;
+bottom:18px;
+height:80px;
+border-radius:12px;
+background:
+linear-gradient(90deg, rgba(148,163,184,.85) 0 0) 16px 18px/128px 6px no-repeat,
+linear-gradient(90deg, rgba(148,163,184,.85) 0 0) 16px 34px/98px 6px no-repeat,
+linear-gradient(90deg, rgba(148,163,184,.85) 0 0) 16px 50px/114px 6px no-repeat,
+linear-gradient(#ffffff,#ffffff);
+box-shadow:inset 0 0 0 2px rgba(203,213,225,.75);
+}
+
+.layout{
+position:relative;
+z-index:2;
+width:min(560px, 100%);
+}
+
+.login-features{
+margin:8px 0 10px;
+display:grid;
+gap:7px;
+padding:10px 10px;
+border-radius:12px;
+border:1px solid rgba(10,162,138,.18);
+background:rgba(10,162,138,.06);
+}
+
+.login-features-title{
+font-size:11px;
+font-weight:900;
+letter-spacing:.12em;
+text-transform:uppercase;
+color:var(--brand-2);
+}
+
+.feature{
+display:flex;
+gap:10px;
+align-items:flex-start;
+color:#0f172a;
+font-size:12.5px;
+line-height:1.35;
+}
+
+.feature .dot{
+flex:0 0 auto;
+width:10px;
+height:10px;
+border-radius:999px;
+margin-top:4px;
+background:linear-gradient(135deg, rgba(34,197,94,.95), rgba(45,212,191,.95));
+box-shadow:0 0 0 4px var(--focus);
+}
+
+.login-wrap{position:relative;width:100%;}.login-card{
+background:var(--card);
+border:1px solid rgba(226,232,240,.95);
+border-radius:18px;
+box-shadow:var(--shadow);
+padding:22px 22px 16px;
+}
+
+.brand{text-align:center;padding:6px 0 10px;}
+.brand-logo{display:block;margin:0 auto 6px;width:160px;height:auto;}
+.brand-sub{margin-top:4px;font-size:12.5px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#0b1220;opacity:.92;}
+
+.welcome{text-align:center;font-size:12.5px;color:#0f172a;margin:4px 0 10px;}
+.welcome strong{color:var(--brand-2);}
+
+.empresa-panel{background:#9ca3af;border-radius:8px;padding:10px;margin-bottom:12px;}
+.empresa-label{display:block;font-size:12px;font-weight:700;color:#ffffff;margin-bottom:8px;}
+
+.field{margin-bottom:10px;}
+.field label{display:block;font-size:12px;font-weight:600;color:#64748b;margin:0 0 5px 2px;}
+
+.password-wrap{position:relative;}
+
+input{
+width:100%;
+padding:10px 10px;
+border-radius:9px;
+border:1px solid #c6d3e0;
+font-size:12.5px;
+outline:none;
+transition:border-color .2s, box-shadow .2s, background .2s;
+background:#f8fbff;
+color:#0f172a;
+}
+
+input::placeholder{color:#7b8ba0;}
+
+input:focus{
+border-color:var(--brand);
+background:#fff;
+box-shadow:0 0 0 4px var(--focus);
+}
+
+.toggle-pass{
+position:absolute;
+right:8px;
+top:50%;
+transform:translateY(-50%);
+border:none;
+background:transparent;
+color:#31465e;
+font-size:11px;
+font-weight:700;
+letter-spacing:.25px;
+cursor:pointer;
+padding:6px 8px;
+border-radius:7px;
+box-shadow:none;
+width:auto;
+display:none;
+}
+
+.toggle-pass:hover{background:#edf3f8;transform:translateY(-50%);}
+
+.check-row{margin:8px 0 10px;}
+.check{display:flex;align-items:center;gap:10px;font-size:12px;color:#0f172a;user-select:none;}
+.check input{width:16px;height:16px;padding:0;border-radius:4px;}
+
+#btnLogin{
+width:100%;
+padding:12px;
+background:linear-gradient(135deg,var(--brand),var(--brand-2));
+border:none;
+border-radius:9px;
+color:#fff;
+font-weight:700;
+font-size:12.5px;
+letter-spacing:.3px;
+cursor:pointer;
+transition:transform .15s, box-shadow .2s, filter .2s;
+margin-top:6px;
+display:flex;
+justify-content:center;
+align-items:center;
+box-shadow:0 10px 20px rgba(6,95,70,.28);
+}
+
+#btnLogin:hover{filter:brightness(1.03);transform:translateY(-1px);}
+#btnLogin.loading{opacity:.72;pointer-events:none;}
+
+.spinner{
+width:16px;
+height:16px;
+border:2px solid rgba(255,255,255,0.35);
+border-top:2px solid white;
+border-radius:50%;
+animation:spin 1s linear infinite;
+margin-left:8px;
+display:none;
+}
+
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.message{margin-top:9px;font-size:12px;display:none;}
+.error{color:#dc2626;}
+.success{color:#15803d;}
+.domain-preview{font-size:11px;color:#64748b;margin-top:4px;padding-left:1px;}
+.caps-warning{font-size:11px;color:#b45309;display:none;margin-top:4px;}
+
+.terms-box{
+display:flex;
+gap:10px;
+align-items:flex-start;
+background:#e7f7f0;
+border:1px solid rgba(10,162,138,.25);
+border-radius:9px;
+padding:10px 10px;
+font-size:12px;
+color:#0f172a;
+margin-top:6px;
+}
+
+.terms-box input{width:16px;height:16px;margin-top:2px;}
+.terms-box a{color:var(--brand-2);font-weight:700;text-decoration:none;}
+.terms-box a:hover{text-decoration:underline;}
+
+.forgot{margin-top:10px;display:flex;justify-content:center;}
+.forgot a{
+text-decoration:none;
+display:inline-flex;
+align-items:center;
+justify-content:center;
+padding:7px 12px;
+border-radius:999px;
+border:2px solid rgba(10,162,138,.55);
+color:var(--brand-2);
+font-weight:800;
+font-size:12px;
+transition:background .2s ease, transform .15s ease;
+}
+
+.forgot a:hover{background:rgba(10,162,138,.10);transform:translateY(-1px);}
+
+.support{
+margin-top:10px;
+background:#f3f4f6;
+border:1px solid #e5e7eb;
+border-radius:9px;
+padding:10px 10px;
+text-align:center;
+font-size:12px;
+color:#334155;
+}
+
+.support strong{color:#f97316;}
+
+.support-phone{
+margin-top:6px;
+display:inline-flex;
+align-items:center;
+justify-content:center;
+gap:7px;
+padding:7px 12px;
+border-radius:999px;
+border:1px solid rgba(10,162,138,.35);
+background:#ffffff;
+color:var(--brand-2);
+font-weight:800;
+text-decoration:none;
+}
+
+.footer{margin-top:10px;font-size:11px;color:#64748b;text-align:center;}
+
+.app-loading{
+position:fixed;
+inset:0;
+display:none;
+align-items:center;
+justify-content:center;
+z-index:9999;
+background:
+radial-gradient(900px 520px at 15% 20%, rgba(45,212,191,.22) 0%, transparent 60%),
+radial-gradient(820px 520px at 88% 80%, rgba(34,211,153,.18) 0%, transparent 62%),
+linear-gradient(180deg, rgba(2,6,23,.62), rgba(2,6,23,.72));
+backdrop-filter:blur(5px);
+}
+
+.app-loading.active{
+display:flex;
+animation:fadeIn .18s ease-out;
+}
+
+@keyframes fadeIn{
+from{opacity:0;}
+to{opacity:1;}
+}
+
+.app-loading-card{
+width:min(380px, calc(100vw - 40px));
+background:rgba(248,251,255,.92);
+border:1px solid rgba(226,232,240,.95);
+border-radius:18px;
+padding:18px 16px 16px;
+text-align:center;
+box-shadow:0 26px 60px rgba(2,6,23,.35);
+position:relative;
+overflow:hidden;
+}
+
+.app-loading-card::before{
+content:'';
+position:absolute;
+left:-30%;
+top:-40%;
+width:160%;
+height:180%;
+background:
+radial-gradient(circle at 30% 30%, rgba(10,162,138,.22) 0%, transparent 55%),
+radial-gradient(circle at 70% 65%, rgba(34,197,94,.18) 0%, transparent 58%);
+opacity:.9;
+pointer-events:none;
+}
+
+.loading-logo{
+position:relative;
+width:60px;
+height:60px;
+object-fit:contain;
+margin:2px auto 10px;
+padding:10px;
+border-radius:999px;
+background:rgba(255,255,255,.92);
+border:1px solid rgba(226,232,240,.95);
+box-shadow:0 14px 22px rgba(2,6,23,.14);
+}
+.app-loading-title{
+position:relative;
+font-size:14px;
+font-weight:800;
+color:#064e3b;
+margin-bottom:4px;
+}
+
+.loading-hint{
+position:relative;
+font-size:12px;
+color:#64748b;
+margin-bottom:12px;
+}
+
+.loading-progress{
+position:relative;
+height:10px;
+border-radius:999px;
+background:rgba(148,163,184,.22);
+border:1px solid rgba(148,163,184,.25);
+overflow:hidden;
+}
+
+.loading-progress span{
+position:absolute;
+inset:0;
+width:45%;
+border-radius:999px;
+background:linear-gradient(90deg, rgba(10,162,138,.85), rgba(34,197,94,.85));
+box-shadow:0 10px 18px rgba(6,95,70,.22);
+animation:barMove 1.1s ease-in-out infinite;
+}
+
+@keyframes barMove{
+0%{transform:translateX(-60%);opacity:.75;}
+50%{transform:translateX(80%);opacity:1;}
+100%{transform:translateX(210%);opacity:.75;}
+}
+
+.dots{
+position:relative;
+display:flex;
+justify-content:center;
+gap:6px;
+margin-top:10px;
+}
+
+.dots span{
+width:7px;
+height:7px;
+border-radius:999px;
+background:#10b981;
+animation:bounce 1s infinite ease-in-out;
+}
+
+.dots span:nth-child(2){animation-delay:.15s;}
+.dots span:nth-child(3){animation-delay:.3s;}
+
+@keyframes bounce{
+0%,80%,100%{transform:scale(.65);opacity:.55;}
+40%{transform:scale(1);opacity:1;}
+}40%{transform:scale(1);opacity:1;}
+}
+
+.toast{
+position:fixed;
+top:18px;
+right:18px;
+z-index:12050;
+min-width:260px;
+max-width:360px;
+padding:12px 14px;
+border-radius:12px;
+border:1px solid #bbf7d0;
+background:#ecfdf5;
+color:#14532d;
+box-shadow:0 14px 28px rgba(2,6,23,.20);
+font-size:12.5px;
+font-weight:600;
+opacity:0;
+transform:translateY(-8px);
+pointer-events:none;
+transition:opacity .22s ease, transform .22s ease;
+}
+
+.toast.show{opacity:1;transform:translateY(0);}
+
+.modal{
+position:fixed;
+inset:0;
+background:rgba(2,6,23,.55);
+display:none;
+align-items:center;
+justify-content:center;
+z-index:10001;
+padding:16px;
+}
+
+.modal.active{display:flex;}
+
+.modal-card{
+width:100%;
+max-width:390px;
+background:#fff;
+border:1px solid #e2e8f0;
+border-radius:14px;
+padding:16px;
+box-shadow:0 20px 45px rgba(15,23,42,.35);
+}
+
+.modal-title{font-size:.95rem;font-weight:700;color:#065f46;margin-bottom:6px;}
+.modal-sub{font-size:.8rem;color:#64748b;margin-bottom:10px;}
+
+.modal-actions{display:flex;gap:7px;margin-top:10px;}
+
+.modal-actions button,.btn-ghost{width:100%;padding:10px;border-radius:9px;font-weight:600;cursor:pointer;}
+
+.modal-actions button{background:linear-gradient(135deg,var(--brand),var(--brand-2));border:none;color:#fff;}
+
+.btn-ghost{border:1px solid #d1d5db;background:#fff;color:#334155;}
+
+@media(max-width:900px){
+body{padding:18px;}
+.decor{display:none;}
+.layout{max-width:520px;}
+.login-card{padding:22px 18px 16px;}
+.brand-logo{width:160px;}
+}
+</style>
+</head>
+
+<body>
+
+<div class="stage" aria-hidden="true">
+  <div class="decor decor-tablet"></div>
+  <div class="decor decor-monitor"></div>
+  <div class="decor decor-phone"></div>
+  <div class="decor decor-printer"></div>
+</div>
+
+<div class="layout">
+  <main class="login-wrap">
+    <section class="login-card">
+      <div class="brand">
+        <img src="image/Logo.png" class="brand-logo" alt="FarmaPOS">
+        <div class="brand-sub">Sistema de Facturacion</div>
+      </div>
+
+    <div class="welcome"><strong>BIENVENIDO</strong> Por favor inicia con tu cuenta de usuario.</div>
+
+    <div class="login-features" role="list" aria-label="Caracteristicas">
+      <div class="login-features-title">Todo en un solo lugar</div>
+      <div class="feature" role="listitem"><span class="dot" aria-hidden="true"></span><div>Ventas rapidas, turnos y control de caja.</div></div>
+      <div class="feature" role="listitem"><span class="dot" aria-hidden="true"></span><div>Inventario con alertas por stock critico y vencimientos.</div></div>
+      <div class="feature" role="listitem"><span class="dot" aria-hidden="true"></span><div>Reportes claros para decisiones diarias.</div></div>
+    </div>
+
+    <div class="empresa-panel">
+      <label class="empresa-label" for="empresa">Empresa (Usuario principal)</label>
+      <input type="text" id="empresa" placeholder="Empresa / Dominio" autocomplete="organization">
+      <div class="domain-preview" id="preview"></div>
+    </div>
+
+    <div class="field">
+      <label for="usuario">Usuario</label>
+      <input type="text" id="usuario" placeholder="Usuario" autocomplete="username">
+    </div>
+
+    <div class="field">
+      <label for="clave">Contraseña</label>
+      <div class="password-wrap">
+        <input type="password" id="clave" placeholder="Contraseña" autocomplete="current-password">
+        <button type="button" class="toggle-pass" id="togglePass">VER</button>
+      </div>
+      <div class="caps-warning" id="capsWarning">Caps Lock está activado.</div>
+    </div>
+
+    <div class="check-row">
+      <label class="check">
+        <input type="checkbox" id="showPass">
+        <span>Mostrar Contraseña</span>
+      </label>
+    </div>
+
+    <div class="terms-box">
+      <input type="checkbox" id="acceptTerms">
+      <div>
+        Al continuar, confirmas que has leído y aceptas nuestros <a href="#">Términos y condiciones</a> y <a href="#">Política de Tratamiento de Datos</a>.
+      </div>
+    </div>
+
+    <button id="btnLogin" type="button" onclick="login()">
+      INICIAR SESIÓN
+      <div class="spinner" id="spinner"></div>
+    </button>
+
+    <div class="message error" id="errorMsg"></div>
+    <div class="message success" id="successMsg"></div>
+
+    <div class="forgot">
+      <a href="#" id="linkRecover">¿Has olvidado tu contraseña?</a>
+    </div>
+
+    <div class="support">
+      <strong>¿Tienes problemas para ingresar?</strong> Estamos aquí para ayudarte. Contáctanos a nuestra línea de soporte.
+      <div>
+        <a class="support-phone" href="tel:+573132181035">+57 (313) 218 1035</a>
+      </div>
+    </div>
+
+    <div class="footer">&copy; 2026 FarmaPOS Cloud</div>
+  </section>
+</main>
+</div>
+
+<div class="app-loading" id="appLoading">
+  <div class="app-loading-card" role="status" aria-live="polite" aria-busy="true">
+    <img class="loading-logo" src="image/Logo.png" alt="FarmaPOS">
+    <div class="app-loading-title" id="appLoadingText">Validando acceso...</div>
+    <div class="loading-hint">Procesando de forma segura. No cierres esta ventana.</div>
+    <div class="loading-progress" aria-hidden="true"><span></span></div>
+    <div class="dots" aria-hidden="true"><span></span><span></span><span></span></div>
+  </div>
+</div>
+
+<div class="toast" id="toastMsg"></div>
+
+<div class="modal" id="recoverModal">
+  <div class="modal-card">
+    <div class="modal-title">Recuperar contrasena</div>
+    <div class="modal-sub">Ingresa tu usuario para generar una clave temporal.</div>
+
+    <div class="field">
+      <label for="recoverEmpresa">Empresa / Dominio (opcional)</label>
+      <input type="text" id="recoverEmpresa" placeholder="Empresa / Dominio (opcional)">
+    </div>
+
+    <div class="field">
+      <label for="recoverUsuario">Usuario</label>
+      <input type="text" id="recoverUsuario" placeholder="Usuario">
+    </div>
+
+    <div class="message error" id="recoverError"></div>
+    <div class="message success" id="recoverSuccess"></div>
+
+    <div class="modal-actions">
+      <button class="btn-ghost" type="button" onclick="closeRecoverModal()">Cancelar</button>
+      <button type="button" onclick="recoverPassword()">Generar clave temporal</button>
+    </div>
+  </div>
+</div>
+
+<script>
+
+const WEBAPP_URL = "https://script.google.com/macros/s/AKfycby9Rf23ERVyl9LwZvQBycddgtxyyx3R8OsqlX0Fyyr7hKuYqnKnEJTGDXH72HyFsrSg/exec";
+const empresaInput = document.getElementById("empresa");
+const preview = document.getElementById("preview");
+const appLoading = document.getElementById("appLoading");
+const appLoadingText = document.getElementById("appLoadingText");
+const recoverModal = document.getElementById("recoverModal");
+const claveInput = document.getElementById("clave");
+const capsWarning = document.getElementById("capsWarning");
+const togglePass = document.getElementById("togglePass");
+const toastMsg = document.getElementById("toastMsg");
+const showPass = document.getElementById("showPass");
+
+empresaInput.addEventListener("input",()=>{
+let value = empresaInput.value.trim().toLowerCase();
+preview.innerText = value ? value + ".farmapos.com" : "";
+});
+
+document.getElementById("linkRecover").addEventListener("click",(e)=>{
+e.preventDefault();
+openRecoverModal();
+});
+
+function setPasswordVisible(visible){
+claveInput.type = visible ? "text" : "password";
+if(togglePass){ togglePass.innerText = visible ? "OCULTAR" : "VER"; }
+if(showPass){ showPass.checked = visible; }
+}
+
+if(togglePass){
+togglePass.addEventListener("click",()=>{
+setPasswordVisible(claveInput.type === "password");
+});
+}
+
+if(showPass){
+showPass.addEventListener("change",()=>{
+setPasswordVisible(!!showPass.checked);
+});
+}
+
+claveInput.addEventListener("keydown",(e)=>{
+if(e.getModifierState && e.getModifierState("CapsLock")){
+capsWarning.style.display = "block";
+}
+});
+
+claveInput.addEventListener("keyup",(e)=>{
+if(e.getModifierState && e.getModifierState("CapsLock")){
+capsWarning.style.display = "block";
+}else{
+capsWarning.style.display = "none";
+}
+});
+
+document.addEventListener("keydown",(e)=>{
+if(e.key === "Escape" && recoverModal.classList.contains("active")){
+closeRecoverModal();
+}
+if(e.key === "Enter" && !recoverModal.classList.contains("active")){
+login();
+}
+});
+
+recoverModal.addEventListener("click",(e)=>{
+if(e.target === recoverModal){
+closeRecoverModal();
+}
+});
+
+function setAppLoading(show, text){
+if(text){ appLoadingText.innerText = text; }
+if(show){ appLoading.classList.add("active"); }
+else{ appLoading.classList.remove("active"); }
+}
+
+function parseDateSafe(v){
+if(!v) return null;
+const d = new Date(v);
+if(!isNaN(d.getTime())) return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+const s = String(v).trim();
+const p = s.split(/[\/-]/);
+if(p.length === 3){
+  const a = Number(p[0]), b = Number(p[1]), c = Number(p[2]);
+  if(a > 31) return new Date(a, b - 1, c);
+  if(c > 31) return new Date(c, b - 1, a);
+}
+return null;
+}
+
+function addMonths(baseDate, months){
+const d = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate());
+d.setMonth(d.getMonth() + Number(months || 0));
+return d;
+}
+
+function daysLeft(fromDate, toDate){
+const ms = toDate.getTime() - fromDate.getTime();
+return Math.ceil(ms / 86400000);
+}
+
+function inferMonthsFromPlan(planRaw){
+const p = String(planRaw || "").toLowerCase().trim();
+if(!p) return 0;
+if(p.includes("12") || p.includes("anual") || p.includes("año")) return 12;
+if(p.includes("6") || p.includes("semes")) return 6;
+if(p.includes("3") || p.includes("trimes")) return 3;
+if(p.includes("demo")) return 1;
+return 0;
+}
+
+function getHeaderIndex(headers, candidates, fallbackIdx){
+for(const c of candidates){
+  const i = headers.findIndex(h => h === c || h.includes(c));
+  if(i >= 0) return i;
+}
+return fallbackIdx != null ? fallbackIdx : -1;
+}
+
+function resolveLicenseInfo(headers, row){
+const today = new Date();
+const baseToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+const idxPlan = getHeaderIndex(headers, ["plan", "licencia", "tipo_licencia"], -1);
+const idxMonths = getHeaderIndex(headers, ["licencia_meses", "meses_licencia", "plan_meses"], -1);
+const idxStart = getHeaderIndex(headers, ["licencia_inicio", "fecha_inicio_licencia", "inicio_licencia"], -1);
+const idxEnd = getHeaderIndex(headers, ["licencia_fin", "fecha_fin_licencia", "vencimiento_licencia", "fin_licencia"], -1);
+
+const plan = idxPlan >= 0 ? String(row[idxPlan] || "").trim() : "";
+const months = idxMonths >= 0 ? Number(row[idxMonths] || 0) : inferMonthsFromPlan(plan);
+const start = parseDateSafe(idxStart >= 0 ? row[idxStart] : null) || baseToday;
+let end = parseDateSafe(idxEnd >= 0 ? row[idxEnd] : null);
+if(!end && months > 0) end = addMonths(start, months);
+
+if(!end){
+  return { active: true, plan: plan || "Sin limite", end: null, days: null };
+}
+const remaining = daysLeft(baseToday, end);
+return { active: remaining >= 0, plan: plan || `${months} meses`, end, days: remaining };
+}
+
+function saveLicenseSession(lic){
+if(!lic) return;
+localStorage.setItem("licencia_plan", String(lic.plan || ""));
+localStorage.setItem("licencia_estado", lic.active ? "activa" : "vencida");
+localStorage.setItem("licencia_dias", lic.days == null ? "" : String(lic.days));
+localStorage.setItem("licencia_fin", lic.end ? lic.end.toISOString().slice(0,10) : "");
+}
+
+function showToast(message){
+if(!toastMsg) return;
+toastMsg.innerText = message;
+toastMsg.classList.add("show");
+clearTimeout(showToast._timer);
+showToast._timer = setTimeout(()=>{
+toastMsg.classList.remove("show");
+}, 2000);
+}
+
+function openRecoverModal(){
+document.getElementById("recoverEmpresa").value = empresaInput.value.trim();
+document.getElementById("recoverUsuario").value = document.getElementById("usuario").value.trim();
+document.getElementById("recoverError").style.display = "none";
+document.getElementById("recoverSuccess").style.display = "none";
+recoverModal.classList.add("active");
+}
+
+function closeRecoverModal(){
+recoverModal.classList.remove("active");
+}
+
+async function recoverPassword(){
+const empresa = document.getElementById("recoverEmpresa").value.trim();
+const usuario = document.getElementById("recoverUsuario").value.trim();
+const err = document.getElementById("recoverError");
+const ok = document.getElementById("recoverSuccess");
+err.style.display = "none";
+ok.style.display = "none";
+
+if(!usuario){
+err.innerText = "El usuario es obligatorio.";
+err.style.display = "block";
+return;
+}
+
+setAppLoading(true,"Generando clave temporal...");
+try{
+const url = WEBAPP_URL + "?action=recover_password&empresa=" + encodeURIComponent(empresa) + "&usuario=" + encodeURIComponent(usuario);
+const res = await fetch(url,{cache:"no-store"});
+const data = await res.json();
+if(!res.ok || !data || data.ok === false){
+throw new Error(data && data.error ? data.error : "No se pudo recuperar");
+}
+
+ok.innerText = "Clave temporal: " + data.temporary_password;
+ok.style.display = "block";
+
+document.getElementById("usuario").value = usuario;
+document.getElementById("clave").value = data.temporary_password || "";
+if(empresa){ empresaInput.value = empresa; }
+}catch(error){
+err.innerText = error && error.message ? error.message : "Error conectando con la base de datos.";
+err.style.display = "block";
+}finally{
+setAppLoading(false);
+}
+}
+
+async function login(){
+
+const empresa = empresaInput.value.trim();
+const usuario = document.getElementById("usuario").value.trim();
+const clave = document.getElementById("clave").value.trim();
+
+const btn = document.getElementById("btnLogin");
+const spinner = document.getElementById("spinner");
+const errorMsg = document.getElementById("errorMsg");
+const successMsg = document.getElementById("successMsg");
+
+errorMsg.style.display="none";
+successMsg.style.display="none";
+setAppLoading(true,"Validando acceso...");
+
+if(!usuario || !clave){
+errorMsg.innerText="Usuario y contrasena son obligatorios.";
+errorMsg.style.display="block";
+setAppLoading(false);
+return;
+}
+
+btn.classList.add("loading");
+spinner.style.display="inline-block";
+
+try{
+const response = await fetch(WEBAPP_URL);
+const data = await response.json();
+
+let acceso = false;
+
+if(!Array.isArray(data) || data.length < 2){
+errorMsg.innerText="No hay usuarios registrados o formato de datos invalido.";
+errorMsg.style.display="block";
+btn.classList.remove("loading");
+spinner.style.display="none";
+setAppLoading(false);
+return;
+}
+
+const headers = (data[0] || []).map(h => String(h || "").trim().toLowerCase());
+const idxUsuario = headers.findIndex(h => h === "usuario" || h.includes("usuario"));
+const idxClave = headers.findIndex(h => h === "clave" || h.includes("contrase"));
+const idxRol = headers.findIndex(h => h === "rol" || h.includes("perfil"));
+const idxEstado = headers.findIndex(h => h === "estado" || h.includes("activo"));
+
+for(let i=1;i<data.length;i++){
+
+let usuarioSheet = data[i][idxUsuario >= 0 ? idxUsuario : 2];
+let claveSheet = data[i][idxClave >= 0 ? idxClave : 3];
+let rol = data[i][idxRol >= 0 ? idxRol : 4];
+let estado = data[i][idxEstado >= 0 ? idxEstado : 5];
+
+if(String(usuarioSheet || "").trim().toLowerCase() === usuario.toLowerCase() && String(claveSheet || "").trim() === clave){
+
+if(String(estado || "").trim().toLowerCase() !== "activo"){
+errorMsg.innerText="Usuario inactivo.";
+errorMsg.style.display="block";
+break;
+}
+
+  const lic = resolveLicenseInfo(headers, data[i] || []);
+
+  acceso = true;
+
+localStorage.setItem("usuario",usuario);
+localStorage.setItem("rol",rol);
+localStorage.setItem("empresa",empresa || "general");
+saveLicenseSession(lic);
+
+const licMsg = lic.days == null ? lic.plan : `${lic.plan} | ${lic.days} dias restantes`;
+successMsg.innerText="Bienvenido "+rol+". "+licMsg+". Redirigiendo...";
+successMsg.style.display="block";
+showToast("Bienvenido " + usuario + ". Login exitoso.");
+setAppLoading(true,"Cargando modulo principal...");
+
+setTimeout(()=>{
+window.location.href="dashboard.html";
+},1500);
+
+break;
+}
+}
+
+if(!acceso){
+errorMsg.innerText="Credenciales incorrectas.";
+errorMsg.style.display="block";
+setAppLoading(false);
+}
+
+}catch(error){
+errorMsg.innerText="Error conectando con la base de datos.";
+errorMsg.style.display="block";
+setAppLoading(false);
+}
+
+btn.classList.remove("loading");
+spinner.style.display="none";
+
+}
+
+</script>
+
+</body>
+</html>
+

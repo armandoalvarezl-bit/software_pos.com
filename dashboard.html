@@ -1,0 +1,1058 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard | FarmaPOS Cloud</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #f3f7f8;
+  --panel: #ffffff;
+  --ink: #0f172a;
+  --muted: #64748b;
+  --line: #e5eef0;
+  --brand: #0b7a5a;
+  --brand-2: #10b981;
+  --danger: #dc2626;
+  --warn: #d97706;
+  --shadow: 0 16px 36px rgba(2, 44, 34, 0.10);
+  --shadow-2: 0 10px 22px rgba(2, 44, 34, 0.08);
+}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+}
+body {
+  background: linear-gradient(180deg, #f6fbf9 0%, #eef6f3 55%, #f3f7f8 100%);
+  color: var(--ink);
+  min-height: 100vh;
+}
+.layout {
+  display: grid;
+  grid-template-columns: 270px 1fr;
+  min-height: 100vh;
+  width: 100%;
+  margin: 0;
+}
+.sidebar {
+  background:
+    radial-gradient(circle at 22% 18%, #ffffff1c 0%, transparent 30%),
+    linear-gradient(180deg, #064e3b 0%, #03392d 54%, #022c22 100%);
+  color: #ecfdf5;
+  padding: 22px 16px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 1.12rem;
+  margin-bottom: 22px;
+}
+.brand-logo{width:30px;height:30px;border-radius:10px;object-fit:contain;display:block;background:rgba(255,255,255,0.14);padding:3px;}
+.brand span{letter-spacing:-.2px;}
+.brand i {
+  background: rgba(255, 255, 255, 0.16);
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+}
+.menu a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #d1fae5;
+  text-decoration: none;
+  padding: 10px 12px;
+  border-radius: 11px;
+  margin-bottom: 6px;
+  transition: background .2s, color .2s, transform .2s;
+  font-size: 0.94rem;
+}
+.menu a:hover,
+.menu a.active {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  transform: translateX(2px);
+}
+.sidebar-note {
+  margin-top: 24px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 14px;
+  padding: 12px;
+  font-size: 0.85rem;
+  color: #e2e8f0;
+}
+.main {
+  padding: 20px;
+}
+.topbar {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow-2);
+}
+.topbar-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.menu-toggle {
+  display: none;
+  border: 1px solid #cdeee2;
+  background: #ffffff;
+  color: #065f46;
+  border-radius: 8px;
+  padding: 6px 9px;
+  cursor: pointer;
+}
+.title {
+  font-size: 1rem;
+  font-weight: 600;
+}
+.subtitle {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.user-meta {
+  text-align: right;
+}
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--brand-2), var(--brand));
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-weight: 600;
+}
+.sync {
+  font-size: 0.74rem;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+.sync.ok { color: #166534; }
+.sync.syncing { color: #0369a1; }
+.sync.offline { color: #b45309; }
+.sync.error { color: #b91c1c; }
+.sync .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: currentColor;
+  opacity: 0.85;
+}
+.filter-row {
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.filter-btn {
+  border: 1px solid #cdeee2;
+  background: #ffffff;
+  color: #065f46;
+  border-radius: 9px;
+  padding: 6px 10px;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+.filter-btn.active {
+  border-color: #34d399;
+  background: #ecfdf5;
+  color: #065f46;
+  font-weight: 600;
+}
+.retry-inline {
+  border: 1px solid #fde68a;
+  background: #fffbeb;
+  color: #92400e;
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-size: 0.72rem;
+  cursor: pointer;
+  display: none;
+}
+.top-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 4px;
+}
+.logout-btn {
+  border: 1px solid #bbf7d0;
+  background: #f0fdf4;
+  color: #065f46;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+.refresh-btn {
+  border: 1px solid #cdeee2;
+  background: #ffffff;
+  color: #065f46;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+.logout-btn:hover {
+  background: #dcfce7;
+}
+.refresh-btn:hover {
+  background: #ecfdf5;
+}
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.card {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 13px;
+  box-shadow: var(--shadow-2);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.card:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+.kpi-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.kpi-head i {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  background: #ecfdf5;
+  color: #047857;
+}
+.kpi-label {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+.kpi-value {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+.kpi-change {
+  font-size: 0.75rem;
+  color: #047857;
+}
+.kpi-change.warn { color: var(--warn); }
+.kpi-change.danger { color: var(--danger); }
+.kpi-card.warn { border-color: #fed7aa; background: linear-gradient(180deg, #fffaf0 0%, #fff7ed 100%); }
+.kpi-card.danger { border-color: #fecaca; background: linear-gradient(180deg, #fff7f7 0%, #fef2f2 100%); }
+.grid {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 12px;
+}
+.section-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 9px;
+}
+.chart {
+  height: 220px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  padding-top: 10px;
+  position: relative;
+}
+.bar {
+  flex: 1;
+  background: linear-gradient(180deg, #34d399 0%, #047857 100%);
+  border-radius: 10px 10px 6px 6px;
+  position: relative;
+  min-height: 24px;
+  animation: rise .9s ease;
+}
+.bar span {
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+.goal-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 1px dashed #f59e0b;
+}
+.goal-line label {
+  position: absolute;
+  right: 0;
+  top: -18px;
+  font-size: 0.68rem;
+  color: #92400e;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 999px;
+  padding: 1px 6px;
+}
+@keyframes rise {
+  from { height: 0; }
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.table th,
+.table td {
+  text-align: left;
+  padding: 8px 4px;
+  font-size: 0.82rem;
+  border-bottom: 1px solid rgba(229, 238, 240, 0.95);
+}
+.table tbody tr:hover{background:#f6fbf9;}
+.badge {
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+.badge.warn { background: #ffedd5; color: var(--warn); }
+.badge.danger { background: #fee2e2; color: var(--danger); }
+.badge.ok { background: #dcfce7; color: #166534; }
+.alert-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px dashed #d1fae5;
+  font-size: 0.82rem;
+}
+.alert-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.alert-time {
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+.table-actions {
+  display: flex;
+  gap: 6px;
+}
+.table-actions button {
+  border: 1px solid #cdeee2;
+  background: #ffffff;
+  color: #065f46;
+  border-radius: 7px;
+  padding: 4px 6px;
+  cursor: pointer;
+  font-size: 0.72rem;
+}
+.table-actions button:hover {
+  background: #ecfdf5;
+}
+.sidebar-overlay {
+  display: none;
+}
+.quick {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(130px, 1fr));
+  gap: 8px;
+}
+.quick button {
+  border: 1px solid #bbf7d0;
+  background: #f0fdf4;
+  color: #065f46;
+  border-radius: 10px;
+  padding: 9px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  transition: 0.2s;
+}
+.quick button:hover {
+  background: #dcfce7;
+}
+@media (max-width: 1180px) {
+  .kpis { grid-template-columns: repeat(2, minmax(180px, 1fr)); }
+  .grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 860px) {
+  .layout { grid-template-columns: 1fr; }
+  .menu-toggle { display: inline-flex; }
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 260px;
+    max-width: 86vw;
+    z-index: 1200;
+    transform: translateX(-100%);
+    transition: transform .25s ease;
+  }
+  .layout.sidebar-open .sidebar { transform: translateX(0); }
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 23, 0.42);
+    z-index: 1100;
+  }
+  .layout.sidebar-open .sidebar-overlay { display: block; }
+  .main { padding: 16px; }
+  .kpis {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+    padding-bottom: 2px;
+    scroll-snap-type: x mandatory;
+  }
+  .kpis .card {
+    min-width: 220px;
+    scroll-snap-align: start;
+  }
+  .topbar {
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .user {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .top-actions { justify-content: flex-start; }
+  .quick { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand"><img class="brand-logo" src="image/Logo.png" alt="FarmaPOS"><span>FarmaPOS</span></div>
+    <nav class="menu">
+      <a href="dashboard.html" class="active"><i class="bi bi-speedometer2"></i> Dashboard</a>
+      <a href="pos.html"><i class="bi bi-cart-plus"></i> Ventas</a>
+      <a href="inventario.html"><i class="bi bi-box-seam"></i> Inventario</a>
+      <a href="pedidos.html"><i class="bi bi-truck"></i> Proveedores</a>
+      <a href="clientes.html"><i class="bi bi-people"></i> Clientes</a>
+      <a href="recetas.html"><i class="bi bi-clipboard2-pulse"></i> Recetas</a>
+      <a href="reportes.html"><i class="bi bi-file-earmark-bar-graph"></i> Reportes</a>
+      <a href="configuracion.html"><i class="bi bi-gear"></i> Configuracion</a>
+      
+    </nav>
+    <div class="sidebar-note">
+      Turno activo<br>
+      Caja #1 | Sede Central
+    </div>
+  </aside>
+  <div class="sidebar-overlay" onclick="toggleSidebar(false)"></div>
+
+  <main class="main">
+    <section class="topbar">
+      <div>
+        <div class="topbar-main">
+          <button class="menu-toggle" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+          <div class="title" id="welcome">Panel general de farmacia</div>
+        </div>
+        <div class="subtitle" id="today"></div>
+        <div class="sync syncing" id="syncStatus"><span class="dot"></span>Sincronizando datos...</div>
+      </div>
+      <div class="user">
+        <div class="user-meta">
+          <div style="font-size:.88rem;font-weight:600" id="userName">Usuario</div>
+          <div style="font-size:.78rem;color:var(--muted)" id="roleName">Rol</div>
+          <div class="top-actions">
+            <button class="refresh-btn" onclick="refreshDashboard()"><i class="bi bi-arrow-repeat"></i> Actualizar</button>
+            <button class="logout-btn" onclick="logout()">Cerrar sesion</button>
+            <button class="retry-inline" id="retrySyncBtn" onclick="refreshDashboard()">Reintentar</button>
+          </div>
+        </div>
+        <div class="user-avatar" id="avatar">U</div>
+      </div>
+    </section>
+
+    <section class="filter-row">
+      <button class="filter-btn active" data-range="today" onclick="setRange('today')">Hoy</button>
+      <button class="filter-btn" data-range="7d" onclick="setRange('7d')">7 dias</button>
+      <button class="filter-btn" data-range="30d" onclick="setRange('30d')">30 dias</button>
+    </section>
+
+    <section class="kpis">
+      <article class="card kpi-card" id="kpiTicketsCard">
+        <div class="kpi-head"><div class="kpi-label">Tickets</div><i class="bi bi-receipt"></i></div>
+        <div class="kpi-value" id="kpiTickets">0</div>
+        <div class="kpi-change" id="kpiTicketAvg">Promedio: $0</div>
+      </article>
+      <article class="card kpi-card" id="kpiLowStockCard">
+        <div class="kpi-head"><div class="kpi-label">Stock critico</div><i class="bi bi-exclamation-triangle"></i></div>
+        <div class="kpi-value" id="kpiLowStock">0</div>
+        <div class="kpi-change" id="kpiLowStockMsg">Sin alertas</div>
+      </article>
+      <article class="card kpi-card" id="kpiExpiringCard">
+        <div class="kpi-head"><div class="kpi-label">Por vencer (30 dias)</div><i class="bi bi-clock-history"></i></div>
+        <div class="kpi-value" id="kpiExpiring">0</div>
+        <div class="kpi-change" id="kpiExpiringMsg">Sin alertas</div>
+      </article>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <div class="section-title">Comportamiento semanal de ventas</div>
+        <div class="chart" aria-label="Grafico semanal" id="weekChart"></div>
+        <div class="quick">
+          <button onclick="window.location.href='pos.html'"><i class="bi bi-plus-circle"></i> Nueva venta</button>
+          <button onclick="window.location.href='inventario.html'"><i class="bi bi-upc-scan"></i> Escanear producto</button>
+          <button onclick="window.location.href='reportes.html'"><i class="bi bi-file-earmark-medical"></i> Ver reportes</button>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="section-title">Alertas operativas</div>
+        <div id="alertsList"></div>
+      </article>
+
+      <article class="card" style="grid-column:1 / -1;">
+        <div class="section-title">Productos prioritarios</div>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Lote</th>
+              <th>Stock</th>
+              <th>Vencimiento</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="priorityTable"></tbody>
+        </table>
+      </article>
+    </section>
+  </main>
+</div>
+
+<script>
+const DASHBOARD_API_URL = "https://script.google.com/macros/s/AKfycby9Rf23ERVyl9LwZvQBycddgtxyyx3R8OsqlX0Fyyr7hKuYqnKnEJTGDXH72HyFsrSg/exec";
+
+const fallbackData = {
+  metrics: {
+    salesToday: 2485000,
+    salesChange: "+12% vs ayer",
+    tickets: 146,
+    ticketAverage: 17021,
+    lowStock: 9,
+    lowStockMessage: "Requiere reposicion",
+    expiring30: 18,
+    expiringMessage: "Accion recomendada"
+  },
+  weeklySales: [
+    { day: "Lun", value: 40 },
+    { day: "Mar", value: 52 },
+    { day: "Mie", value: 61 },
+    { day: "Jue", value: 72 },
+    { day: "Vie", value: 83 },
+    { day: "Sab", value: 68 },
+    { day: "Dom", value: 48 }
+  ],
+  alerts: [
+    { text: "Amoxicilina 500mg (stock bajo)", tag: "3 und", level: "danger", timestamp: "2026-03-03T08:35:00" },
+    { text: "Ibuprofeno jarabe vence en 7 dias", tag: "Vence pronto", level: "warn", timestamp: "2026-03-03T08:20:00" },
+    { text: "Paracetamol 1g (quiebre de inventario)", tag: "Sin stock", level: "danger", timestamp: "2026-03-03T08:10:00" },
+    { text: "Pedido #4587 confirmado por proveedor", tag: "En camino", level: "ok", timestamp: "2026-03-03T07:55:00" }
+  ],
+  priorityProducts: [
+    { product: "Omeprazol 20mg x 30", lot: "OM-00981", stock: 14, expires: "2026-04-10", status: "Rotacion alta", level: "warn" },
+    { product: "Loratadina 10mg", lot: "LR-22011", stock: 6, expires: "2026-03-15", status: "Critico", level: "danger" },
+    { product: "Vitamina C 1g efervescente", lot: "VC-13008", stock: 28, expires: "2026-08-30", status: "Normal", level: "ok" }
+  ],
+  ranges: {
+    today: {
+      metrics: {
+        salesToday: 2485000,
+        salesChange: "+12% vs ayer",
+        tickets: 146,
+        ticketAverage: 17021,
+        lowStock: 9,
+        lowStockMessage: "Requiere reposicion",
+        expiring30: 18,
+        expiringMessage: "Accion recomendada"
+      }
+    },
+    "7d": {
+      metrics: {
+        salesToday: 15840000,
+        salesChange: "+8% vs semana anterior",
+        tickets: 954,
+        ticketAverage: 16603,
+        lowStock: 11,
+        lowStockMessage: "Revisar top 20",
+        expiring30: 20,
+        expiringMessage: "Monitoreo activo"
+      }
+    },
+    "30d": {
+      metrics: {
+        salesToday: 64110000,
+        salesChange: "+6% vs mes anterior",
+        tickets: 3920,
+        ticketAverage: 16355,
+        lowStock: 14,
+        lowStockMessage: "Plan de compra sugerido",
+        expiring30: 23,
+        expiringMessage: "Accion recomendada"
+      }
+    }
+  }
+};
+
+let currentRange = "today";
+let lastDashboardData = null;
+
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>\"']/g, (char) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    "\"": "&quot;",
+    "'": "&#39;"
+  }[char]));
+}
+
+function safeText(value, fallback = "No reportado") {
+  const text = String(value ?? "").trim();
+  return text ? text : fallback;
+}
+
+function safeNumber(value, fallback = 0) {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : fallback;
+}
+
+function formatMoney(value) {
+  return "$" + safeNumber(value, 0).toLocaleString("es-CO");
+}
+
+function formatTime(value) {
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return "No reportado";
+  return d.toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" });
+}
+
+function timeAgo(value) {
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return "Sin hora";
+  const diff = Math.max(0, Math.floor((Date.now() - d.getTime()) / 60000));
+  if (diff < 1) return "Ahora";
+  if (diff < 60) return `Hace ${diff} min`;
+  const h = Math.floor(diff / 60);
+  return `Hace ${h} h`;
+}
+
+function setSyncState(state, text) {
+  const sync = document.getElementById("syncStatus");
+  const retry = document.getElementById("retrySyncBtn");
+  sync.className = `sync ${state}`;
+  sync.innerHTML = `<span class="dot"></span>${escapeHtml(text)}`;
+  retry.style.display = (state === "offline" || state === "error") ? "inline-block" : "none";
+}
+
+function setRange(range) {
+  currentRange = range;
+  document.querySelectorAll(".filter-btn").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.range === range);
+  });
+
+  if (lastDashboardData) {
+    renderDashboard(lastDashboardData);
+  } else {
+    loadDashboard();
+  }
+}
+
+function setUserHeader() {
+  const now = new Date();
+  const fecha = now.toLocaleDateString("es-CO", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric"
+  });
+
+  const usuario = localStorage.getItem("usuario") || "Usuario";
+  const rol = localStorage.getItem("rol") || "Administrador";
+  const empresa = decodeEmpresa_(localStorage.getItem("empresa") || "") || "Sede principal";
+
+  document.getElementById("today").textContent = fecha.charAt(0).toUpperCase() + fecha.slice(1);
+  document.getElementById("userName").textContent = usuario;
+  document.getElementById("roleName").textContent = rol;
+  document.getElementById("avatar").textContent = usuario.charAt(0).toUpperCase();
+  document.getElementById("welcome").textContent = `Panel general de farmacia | ${empresa}`;
+}
+
+function logout() {
+  localStorage.removeItem("usuario");
+  localStorage.removeItem("rol");
+  localStorage.removeItem("empresa");
+  window.location.href = "index.html";
+}
+
+function applyKpiRiskStyles(lowStock, expiring) {
+  const lowCard = document.getElementById("kpiLowStockCard");
+  const expCard = document.getElementById("kpiExpiringCard");
+  const lowMsg = document.getElementById("kpiLowStockMsg");
+  const expMsg = document.getElementById("kpiExpiringMsg");
+
+  [lowCard, expCard].forEach((el) => el.classList.remove("warn", "danger"));
+  [lowMsg, expMsg].forEach((el) => el.classList.remove("warn", "danger"));
+
+  if (lowStock >= 10) {
+    lowCard.classList.add("danger");
+    lowMsg.classList.add("danger");
+  } else if (lowStock >= 5) {
+    lowCard.classList.add("warn");
+    lowMsg.classList.add("warn");
+  }
+
+  if (expiring >= 15) {
+    expCard.classList.add("danger");
+    expMsg.classList.add("danger");
+  } else if (expiring >= 7) {
+    expCard.classList.add("warn");
+    expMsg.classList.add("warn");
+  }
+}
+
+function renderWeeklySales(items) {
+  const chart = document.getElementById("weekChart");
+  chart.innerHTML = "";
+
+  if (!Array.isArray(items) || items.length === 0) {
+    chart.innerHTML = "<div class='subtitle'>Sin informacion semanal.</div>";
+    return;
+  }
+
+  const values = items.map((item) => safeNumber(item.value, 0));
+  const maxValue = Math.max(1, ...values);
+  const goal = Math.max(10, Math.round((values.reduce((a, b) => a + b, 0) / values.length) * 1.1));
+
+  items.forEach((item) => {
+    const rawValue = safeNumber(item.value, 0);
+    const value = Math.max(8, (rawValue / maxValue) * 100);
+    const label = safeText(item.day, "Dia");
+    const bar = document.createElement("div");
+    bar.className = "bar";
+    bar.style.height = `${Math.min(value, 100)}%`;
+    bar.title = `${label}: ${rawValue.toLocaleString("es-CO")}`;
+    bar.innerHTML = `<span>${escapeHtml(label)}</span>`;
+    chart.appendChild(bar);
+  });
+
+  const goalLine = document.createElement("div");
+  goalLine.className = "goal-line";
+  goalLine.style.bottom = `${Math.min(100, (goal / maxValue) * 100)}%`;
+  goalLine.innerHTML = `<label>Meta ${goal.toLocaleString("es-CO")}</label>`;
+  chart.appendChild(goalLine);
+}
+
+function normalizeAlertLevel(level) {
+  const value = String(level || "").toLowerCase();
+  if (value === "danger" || value === "warn" || value === "ok") return value;
+  return "ok";
+}
+
+function renderAlerts(items) {
+  const alerts = document.getElementById("alertsList");
+  alerts.innerHTML = "";
+
+  if (!Array.isArray(items) || items.length === 0) {
+    alerts.innerHTML = "<div class='subtitle'>Sin alertas activas.</div>";
+    return;
+  }
+
+  const severity = { danger: 3, warn: 2, ok: 1 };
+  const ordered = [...items]
+    .map((item) => ({
+      text: safeText(item.text, "Alerta"),
+      tag: safeText(item.tag, "Info"),
+      level: normalizeAlertLevel(item.level),
+      timestamp: item.timestamp || new Date().toISOString()
+    }))
+    .sort((a, b) => {
+      if (severity[b.level] !== severity[a.level]) return severity[b.level] - severity[a.level];
+      return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+    });
+
+  ordered.forEach((item, index) => {
+    const div = document.createElement("div");
+    div.className = "alert-item";
+    if (index === ordered.length - 1) div.style.borderBottom = "none";
+    div.innerHTML = `
+      <div class="alert-copy">
+        <span>${escapeHtml(item.text)}</span>
+        <span class="alert-time">${escapeHtml(timeAgo(item.timestamp))} | ${escapeHtml(formatTime(item.timestamp))}</span>
+      </div>
+      <span class="badge ${item.level}">${escapeHtml(item.tag)}</span>
+    `;
+    alerts.appendChild(div);
+  });
+}
+
+function actionUrl(base, product) {
+  const [path, hash] = String(base).split("#");
+  const withQuery = `${path}?producto=${encodeURIComponent(product)}`;
+  return hash ? `${withQuery}#${hash}` : withQuery;
+}
+
+function renderPriorityTable(items) {
+  const table = document.getElementById("priorityTable");
+  table.innerHTML = "";
+
+  if (!Array.isArray(items) || items.length === 0) {
+    table.innerHTML = "<tr><td colspan='6'>Sin productos prioritarios.</td></tr>";
+    return;
+  }
+
+  items.forEach((item) => {
+    const product = safeText(item.product, "No reportado");
+    const lot = safeText(item.lot, "No reportado");
+    const stock = safeNumber(item.stock, 0);
+    const expires = safeText(item.expires, "No reportado");
+    const level = normalizeAlertLevel(item.level);
+    const status = safeText(item.status, "Normal");
+
+    table.innerHTML += `
+      <tr>
+        <td>${escapeHtml(product)}</td>
+        <td>${escapeHtml(lot)}</td>
+        <td>${stock.toLocaleString("es-CO")}</td>
+        <td>${escapeHtml(expires)}</td>
+        <td><span class="badge ${level}">${escapeHtml(status)}</span></td>
+        <td>
+          <div class="table-actions">
+            <button onclick="window.location.href='${actionUrl("inventario.html", product)}'">Inventario</button>
+            <button onclick="window.location.href='${actionUrl("inventario.html#ajuste", product)}'">Ajustar</button>
+            <button onclick="window.location.href='${actionUrl("reportes.html", product)}'">Pedido</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+function getDataByRange(data, range) {
+  const source = data || fallbackData;
+  const ranged = source.ranges && source.ranges[range] ? source.ranges[range] : {};
+
+  return {
+    metrics: {
+      ...(source.metrics || {}),
+      ...(ranged.metrics || {})
+    },
+    weeklySales: Array.isArray(ranged.weeklySales) ? ranged.weeklySales : source.weeklySales,
+    alerts: Array.isArray(ranged.alerts) ? ranged.alerts : source.alerts,
+    priorityProducts: Array.isArray(ranged.priorityProducts) ? ranged.priorityProducts : source.priorityProducts
+  };
+}
+
+function renderDashboard(data) {
+  const scoped = getDataByRange(data, currentRange);
+  const metrics = scoped.metrics || {};
+
+  const tickets = safeNumber(metrics.tickets, 0);
+  const avg = safeNumber(metrics.ticketAverage, 0);
+  const low = safeNumber(metrics.lowStock, 0);
+  const exp = safeNumber(metrics.expiring30, 0);
+
+  document.getElementById("kpiTickets").textContent = tickets.toLocaleString("es-CO");
+  document.getElementById("kpiTicketAvg").textContent = `Promedio: ${formatMoney(avg)}`;
+  document.getElementById("kpiLowStock").textContent = low.toLocaleString("es-CO");
+  document.getElementById("kpiLowStockMsg").textContent = safeText(metrics.lowStockMessage, "Sin alertas");
+  document.getElementById("kpiExpiring").textContent = exp.toLocaleString("es-CO");
+  document.getElementById("kpiExpiringMsg").textContent = safeText(metrics.expiringMessage, "Sin alertas");
+
+  applyKpiRiskStyles(low, exp);
+  renderWeeklySales(scoped.weeklySales || []);
+  renderAlerts(scoped.alerts || []);
+  renderPriorityTable(scoped.priorityProducts || []);
+}
+
+function normalizeDashboardData(raw) {
+  if (!raw || typeof raw !== "object") return fallbackData;
+
+  const source = raw.data && typeof raw.data === "object" ? raw.data : raw;
+  const merged = {
+    metrics: {
+      ...fallbackData.metrics,
+      ...((source.metrics && typeof source.metrics === "object") ? source.metrics : {})
+    },
+    weeklySales: Array.isArray(source.weeklySales) ? source.weeklySales : fallbackData.weeklySales,
+    alerts: Array.isArray(source.alerts) ? source.alerts : fallbackData.alerts,
+    priorityProducts: Array.isArray(source.priorityProducts) ? source.priorityProducts : fallbackData.priorityProducts,
+    ranges: (source.ranges && typeof source.ranges === "object") ? source.ranges : fallbackData.ranges
+  };
+
+  if (source.ventas_dia != null) merged.metrics.salesToday = source.ventas_dia;
+  if (source.tickets != null) merged.metrics.tickets = source.tickets;
+  if (source.stock_critico != null) merged.metrics.lowStock = source.stock_critico;
+  if (source.por_vencer_30 != null) merged.metrics.expiring30 = source.por_vencer_30;
+
+  return merged;
+}
+
+function decodeEmpresa_(raw) {
+  let value = String(raw || "").trim();
+  if (!value) return "";
+  // Evita doble/triple-encode cuando `empresa` queda guardada como URL-encoded
+  // (ej: "Sede%20principal" o "Sede%2520principal").
+  value = value.replace(/\+/g, " ");
+  for (let i = 0; i < 3 && /%[0-9a-fA-F]{2}/.test(value); i++) {
+    try {
+      const decoded = decodeURIComponent(value);
+      if (decoded === value) break;
+      value = decoded;
+    } catch (_) {
+      break;
+    }
+  }
+  return String(value || "").trim();
+}
+
+function normalizeEmpresaForApi(empresa) {
+  const value = decodeEmpresa_(empresa);
+  const normalized = value.toLowerCase();
+  if (!normalized || normalized === "general" || normalized === "sede principal" || normalized === "todas" || normalized === "todos") {
+    return "";
+  }
+  return value;
+}
+
+async function loadSalesToday_(empresa) {
+  const url = `${DASHBOARD_API_URL}?action=sales&empresa=${encodeURIComponent(empresa)}`;
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) throw new Error("No se pudo cargar ventas del dia");
+  const data = await res.json();
+  if (!data || typeof data !== "object") throw new Error("Respuesta invalida de ventas");
+  return {
+    salesToday: safeNumber(data.totalToday, 0),
+    tickets: safeNumber(data.ticketsToday, 0)
+  };
+}
+async function loadDashboard() {
+  const empresa = normalizeEmpresaForApi(localStorage.getItem("empresa") || "");
+  setSyncState("syncing", "Sincronizando datos... (empresa: " + (empresa || "general") + ")");
+
+  try {
+    const url = `${DASHBOARD_API_URL}?action=dashboard&empresa=${encodeURIComponent(empresa)}&range=${encodeURIComponent(currentRange)}`;
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) throw new Error("Respuesta no valida");
+
+    const json = await res.json();
+    const normalized = normalizeDashboardData(json);
+    // Keep "Ventas del dia" consistent with ventas.html (action=sales).
+    if (currentRange === "today") {
+      try {
+        const sales = await loadSalesToday_(empresa);
+        normalized.metrics = normalized.metrics || {};
+        normalized.metrics.salesToday = sales.salesToday;
+        normalized.metrics.tickets = sales.tickets;
+        normalized.metrics.ticketAverage = sales.tickets ? (sales.salesToday / sales.tickets) : 0;
+      } catch (_) {
+        // If this fails, keep dashboard metrics as-is.
+      }
+    }
+    lastDashboardData = normalized;
+    renderDashboard(normalized);
+
+    const stamp = new Date().toLocaleTimeString("es-CO");
+    setSyncState("ok", `Nube OK (empresa: ${(empresa || "general")}) ï¿½ Ultima sincronizacion: ${stamp}`);
+  } catch (error) {
+    const local = normalizeDashboardData(fallbackData);
+    lastDashboardData = local;
+    renderDashboard(local);
+    const msg = (error && error.message) ? error.message : "No se pudo sincronizar con la nube.";
+    setSyncState("offline", "Modo local: " + msg);
+  }
+}
+
+function refreshDashboard() {
+  loadDashboard();
+}
+
+function toggleSidebar(forceOpen) {
+  const layout = document.querySelector(".layout");
+  if (typeof forceOpen === "boolean") {
+    layout.classList.toggle("sidebar-open", forceOpen);
+    return;
+  }
+  layout.classList.toggle("sidebar-open");
+}
+
+window.addEventListener("resize", () => {
+  if (window.innerWidth > 860) {
+    toggleSidebar(false);
+  }
+});
+
+document.querySelectorAll(".menu a").forEach((link) => {
+  link.addEventListener("click", () => {
+    if (window.innerWidth <= 860) toggleSidebar(false);
+  });
+});
+
+setUserHeader();
+if (!localStorage.getItem("usuario")) {
+  window.location.href = "index.html";
+}
+window.addEventListener("error", (ev) => {
+  const msg = ev && ev.message ? ev.message : "Error desconocido";
+  try { setSyncState("offline", "Error JS: " + msg); } catch (_) {}
+});
+window.addEventListener("unhandledrejection", (ev) => {
+  const reason = ev && ev.reason ? ev.reason : null;
+  const msg = reason && reason.message ? reason.message : String(reason || "Error desconocido");
+  try { setSyncState("offline", "Error: " + msg); } catch (_) {}
+});
+loadDashboard();
+</script>
+</body>
+</html>
+
+

@@ -1,0 +1,440 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reportes | FarmaPOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<link rel="icon" type="image/png" href="favicon.png">
+<style>
+:root{--bg:#ecfdf5;--panel:#fff;--line:#d1fae5;--ink:#0f172a;--muted:#64748b;--brand:#065f46}
+*{box-sizing:border-box;margin:0;padding:0;font-family:"Poppins",sans-serif}
+body{background:var(--bg);color:var(--ink)}
+.layout{display:grid;grid-template-columns:270px 1fr;min-height:100vh}
+.sidebar{background:linear-gradient(180deg,#064e3b 0%,#022c22 100%);color:#ecfdf5;padding:24px 18px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.brand{font-weight:700;font-size:1.2rem;margin-bottom:24px;display:flex;gap:10px;align-items:center}
+.menu a{display:flex;align-items:center;gap:10px;color:#d1fae5;text-decoration:none;padding:10px 12px;border-radius:11px;margin-bottom:6px;transition:background .2s,color .2s,transform .2s;font-size:.94rem}
+.menu a.active,.menu a:hover{background:rgba(255,255,255,.13);color:#fff}
+.main{padding:24px}
+.top{display:flex;justify-content:space-between;align-items:center;background:var(--panel);border:1px solid var(--line);padding:14px;border-radius:12px;margin-bottom:12px}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:end;background:var(--panel);border:1px solid var(--line);padding:12px;border-radius:12px;margin-bottom:12px}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-size:.75rem;color:var(--muted)}
+.field input,.field select{border:1px solid #bbf7d0;border-radius:8px;padding:8px 10px;background:#fff;min-width:140px}
+.btn{border:1px solid #86efac;background:#f0fdf4;color:var(--brand);padding:8px 10px;border-radius:8px;cursor:pointer}
+.btn.primary{background:#065f46;color:#fff;border-color:#065f46}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(180px,1fr));gap:10px;margin-bottom:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
+.big{font-size:1.3rem;font-weight:700}
+.table{width:100%;border-collapse:collapse;margin-top:10px}
+.table th,.table td{padding:10px 6px;border-bottom:1px solid #ecfeff;text-align:left;font-size:.9rem}
+.logout{border:1px solid #bbf7d0;background:#f0fdf4;color:var(--brand);padding:7px 10px;border-radius:8px;cursor:pointer}
+.error{display:none;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:10px;border-radius:10px;margin-bottom:12px;font-size:.9rem}
+.muted{color:var(--muted);font-size:.82rem}
+.menu-toggle{display:none;border:1px solid #cdeee2;background:#fff;color:#065f46;border-radius:8px;padding:6px 9px;cursor:pointer}
+.sidebar-overlay{display:none}
+
+@media(max-width:860px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{display:block;position:fixed;left:0;top:0;bottom:0;width:270px;z-index:50;transform:translateX(-110%);transition:transform .2s ease;box-shadow:0 18px 60px rgba(2,44,34,.22)}
+  .menu-toggle{display:inline-flex;align-items:center;justify-content:center}
+  .sidebar-overlay{display:block;position:fixed;inset:0;background:rgba(2,44,34,.35);backdrop-filter:blur(2px);z-index:40;opacity:0;pointer-events:none;transition:opacity .2s ease}
+  .layout.sidebar-open .sidebar{transform:translateX(0)}
+  .layout.sidebar-open .sidebar-overlay{opacity:1;pointer-events:auto}
+  .grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand"><i class="bi bi-capsule-pill"></i> FarmaPOS</div>
+  <nav class="menu">
+    <a href="dashboard.html"><i class="bi bi-speedometer2"></i> Dashboard</a>
+    <a href="ventas.html"><i class="bi bi-cart-plus"></i> Ventas</a>
+    <a href="inventario.html"><i class="bi bi-box-seam"></i> Inventario</a>
+    <a href="reportes.html" class="active"><i class="bi bi-file-earmark-bar-graph"></i> Reportes</a>
+  </nav>
+</aside>
+<div class="sidebar-overlay" onclick="toggleSidebar(false)"></div>
+<main class="main">
+  <section class="top">
+    <button class="menu-toggle" type="button" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+    <div>
+      <div style="font-weight:600">Reportes ejecutivos</div>
+      <div id="sync" style="font-size:.8rem;color:var(--muted)">Sincronizando...</div>
+    </div>
+    <button class="logout" onclick="logout()">Cerrar sesion</button>
+  </section>
+  <section class="toolbar">
+    <div class="field">
+      <label>Rango</label>
+      <select id="rangePreset">
+        <option value="month">Mes actual</option>
+        <option value="today">Hoy</option>
+        <option value="7d">Ultimos 7 dias</option>
+        <option value="30d">Ultimos 30 dias</option>
+        <option value="custom">Personalizado</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Desde</label>
+      <input id="fromDate" type="date">
+    </div>
+    <div class="field">
+      <label>Hasta</label>
+      <input id="toDate" type="date">
+    </div>
+    <button class="btn" id="btnApply" type="button">Aplicar</button>
+    <button class="btn" id="btnRefresh" type="button">Recargar</button>
+    <button class="btn primary" id="btnPdf" type="button">Exportar PDF</button>
+    <div class="muted" id="rangeCaption"></div>
+  </section>
+  <section id="errorBox" class="error"></section>
+  <section class="grid">
+    <article class="card"><div style="color:var(--muted);font-size:.85rem">Ventas del rango</div><div class="big" id="monthSales">$0</div></article>
+    <article class="card"><div style="color:var(--muted);font-size:.85rem">Tickets del rango</div><div class="big" id="monthTickets">0</div></article>
+    <article class="card"><div style="color:var(--muted);font-size:.85rem">Ticket promedio</div><div class="big" id="avgTicket">$0</div></article>
+    <article class="card"><div style="color:var(--muted);font-size:.85rem">SKUs en inventario</div><div class="big" id="invSkus">0</div></article>
+    <article class="card"><div style="color:var(--muted);font-size:.85rem">Unidades en stock</div><div class="big" id="invUnits">0</div></article>
+    <article class="card"><div style="color:var(--muted);font-size:.85rem">Valor inventario</div><div class="big" id="invValue">$0</div></article>
+  </section>
+  <section class="card" style="margin-bottom:12px">
+    <div style="font-weight:600">Ventas por metodo de pago</div>
+    <table class="table">
+      <thead><tr><th>Metodo</th><th>Monto</th></tr></thead>
+      <tbody id="payRows"></tbody>
+    </table>
+  </section>
+  <section class= card id=topCard>
+    <div style="font-weight:600">Top productos (stock actual)</div>
+    <table class="table">
+      <thead><tr><th>Producto</th><th>Unidades</th></tr></thead>
+      <tbody id="topRows"></tbody>
+    </table>
+  </section>
+  <section class="card" style="margin-top:12px">
+    <table class="table">
+      <thead><tr><th>Fecha</th><th>Total ventas</th></tr></thead>
+      <tbody id="dailyRows"></tbody>
+    </table>
+  </section>
+  <section class="card" style="margin-top:12px">
+    <div style="display:flex;justify-content:space-between;align-items:end;gap:10px;flex-wrap:wrap">
+      <div style="font-weight:600">Facturas del rango</div>
+      <div class="field" style="min-width:220px">
+        <label>Buscar</label>
+        <input id="invoiceSearch" type="text" placeholder="ID, cliente, cajero...">
+      </div>
+    </div>
+    <table class="table">
+      <thead><tr><th>Fecha</th><th>Factura</th><th>Cliente</th><th>Cajero</th><th>Metodo</th><th>Monto</th><th></th></tr></thead>
+      <tbody id="invoiceRows"></tbody>
+    </table>
+    <div class="muted" id="invoiceMeta"></div>
+  </section>
+</main>
+</div>
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycby9Rf23ERVyl9LwZvQBycddgtxyyx3R8OsqlX0Fyyr7hKuYqnKnEJTGDXH72HyFsrSg/exec";
+let autoTimer = null;
+let lastReportData = null;
+let lastInvoices = [];
+let lastInvoicesPayload = null;
+
+function money(v){ return "$" + Number(v || 0).toLocaleString("es-CO"); }
+function logout(){ localStorage.removeItem("usuario"); localStorage.removeItem("rol"); localStorage.removeItem("empresa"); window.location.href = "index.html"; }
+function guard(){ if(!localStorage.getItem("usuario")) window.location.href = "index.html"; }
+function escapeHtml(str){
+  return String(str || "").replace(/[&<>"']/g, function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c];
+  });
+}
+function emptyData(){
+  return {
+    summary:{monthSales:0,monthTickets:0,avgTicket:0},
+    inventory:{totalSkus:0,totalUnits:0,stockValue:0},
+    paymentBreakdown:[],
+    topProducts:[],
+    dailySales:[],
+    range:{from:"",to:""}
+  };
+}
+function toggleCustomDates(){
+  const custom = document.getElementById("rangePreset").value === "custom";
+  document.getElementById("fromDate").disabled = !custom;
+  document.getElementById("toDate").disabled = !custom;
+}
+function showError(msg){
+  const box = document.getElementById("errorBox");
+  if(!msg){ box.style.display = "none"; box.textContent = ""; return; }
+  box.style.display = "block";
+  box.textContent = msg;
+}
+function normalizeEmpresaForApi(empresa) {
+  let value = String(empresa || "").trim();
+  if (value) {
+    // Corrige valores guardados como URL-encoded (ej: "Sede%20principal" o "Sede%2520principal"),
+    // para evitar doble encode (%2520).
+    value = value.replace(/\+/g, " ");
+    for (let i = 0; i < 3 && /%[0-9a-fA-F]{2}/.test(value); i++) {
+      try {
+        const decoded = decodeURIComponent(value);
+        if (decoded === value) break;
+        value = decoded;
+      } catch (_) {
+        break;
+      }
+    }
+    value = String(value || "").trim();
+  }
+  const normalized = value.toLowerCase();
+  if (!normalized || normalized === "general" || normalized === "sede principal" || normalized === "todas" || normalized === "todos") {
+    return "";
+  }
+  return value;
+}
+function getFilters(){
+  const preset = document.getElementById("rangePreset").value;
+  const q = new URLSearchParams();
+  q.set("action","reports");
+  q.set("empresa", normalizeEmpresaForApi(localStorage.getItem("empresa") || ""));
+  q.set("range", preset);
+  if(preset === "custom"){
+    q.set("from", document.getElementById("fromDate").value || "");
+    q.set("to", document.getElementById("toDate").value || "");
+  }
+  return q;
+}
+function render(data){
+  const safe = (data && data.summary) ? data : emptyData();
+  lastReportData = safe;
+  const s = safe.summary || {};
+  const inv = safe.inventory || {};
+  const r = safe.range || {};
+
+  document.getElementById("monthSales").textContent = money(s.monthSales);
+  document.getElementById("monthTickets").textContent = Number(s.monthTickets || 0).toLocaleString("es-CO");
+  document.getElementById("avgTicket").textContent = money(s.avgTicket);
+  document.getElementById("invSkus").textContent = Number(inv.totalSkus || 0).toLocaleString("es-CO");
+  document.getElementById("invUnits").textContent = Number(inv.totalUnits || 0).toLocaleString("es-CO");
+  document.getElementById("invValue").textContent = money(inv.stockValue);
+  document.getElementById("rangeCaption").textContent = (r.from && r.to) ? ("Rango aplicado: " + r.from + " a " + r.to) : "";
+
+  const pay = document.getElementById("payRows");
+  pay.innerHTML = "";
+  (safe.paymentBreakdown || []).forEach(function(it){
+    pay.innerHTML += "<tr><td>" + escapeHtml(it.metodo || "-") + "</td><td>" + money(it.monto) + "</td></tr>";
+  });
+  if(!(safe.paymentBreakdown || []).length) pay.innerHTML = "<tr><td colspan='2'>Sin datos.</td></tr>";
+
+  const top = document.getElementById("topRows");
+  top.innerHTML = "";
+  (safe.topProducts || []).forEach(function(it){
+    top.innerHTML += "<tr><td>" + escapeHtml(it.producto || "-") + "</td><td>" + Number(it.unidades || 0).toLocaleString("es-CO") + "</td></tr>";
+  });
+  if(!(safe.topProducts || []).length) top.innerHTML = "<tr><td colspan='2'>Sin datos.</td></tr>";
+
+  const daily = document.getElementById("dailyRows");
+  daily.innerHTML = "";
+  (safe.dailySales || []).forEach(function(it){
+    daily.innerHTML += "<tr><td>" + escapeHtml(it.fecha || "-") + "</td><td>" + money(it.total) + "</td></tr>";
+  });
+  if(!(safe.dailySales || []).length) daily.innerHTML = "<tr><td colspan='2'>Sin datos.</td></tr>";
+}
+
+function setInvoiceMeta_(text){
+  const meta = document.getElementById("invoiceMeta");
+  if(meta) meta.textContent = text || "";
+}
+
+function renderInvoicesError_(message){
+  lastInvoices = [];
+  lastInvoicesPayload = null;
+  const tbody = document.getElementById("invoiceRows");
+  if(tbody){
+    tbody.innerHTML = "<tr><td colspan='7'>" + escapeHtml(message || "No hay facturas para mostrar.") + "</td></tr>";
+  }
+  setInvoiceMeta_(message || "");
+}
+
+function openInvoicePrint(id, mode){
+  const saleId = String(id || "").trim();
+  if(!saleId) return;
+  const m = (String(mode || "").toLowerCase() === "pos") ? "pos" : "a4";
+  const url = "pos.html?print=" + encodeURIComponent(saleId) + "&mode=" + encodeURIComponent(m);
+  window.open(url, "_blank");
+}
+
+function applyInvoiceSearch_(){
+  const qEl = document.getElementById("invoiceSearch");
+  const q = qEl ? String(qEl.value || "").trim().toLowerCase() : "";
+  const rows = Array.isArray(lastInvoices) ? lastInvoices : [];
+  const filtered = !q ? rows : rows.filter(function(r){
+    const hay = [
+      r && r.fecha ? r.fecha : "",
+      r && r.id_venta ? r.id_venta : "",
+      r && r.cliente ? r.cliente : "",
+      r && r.cajero ? r.cajero : "",
+      r && r.metodo_pago ? r.metodo_pago : ""
+    ].join(" ").toLowerCase();
+    return hay.indexOf(q) !== -1;
+  });
+
+  const tbody = document.getElementById("invoiceRows");
+  if(!tbody) return;
+  let html = "";
+  filtered.forEach(function(r){
+    const id = String(r && r.id_venta ? r.id_venta : "");
+    const safeId = id.replace(/'/g,"\\'");
+    html += "<tr>" +
+      "<td>" + escapeHtml(r && r.fecha ? r.fecha : "-") + "</td>" +
+      "<td>" + escapeHtml(id || "-") + "</td>" +
+      "<td>" + escapeHtml(r && r.cliente ? r.cliente : "-") + "</td>" +
+      "<td>" + escapeHtml(r && r.cajero ? r.cajero : "-") + "</td>" +
+      "<td>" + escapeHtml(r && r.metodo_pago ? r.metodo_pago : "-") + "</td>" +
+      "<td>" + money(r && r.total != null ? r.total : 0) + "</td>" +
+      "<td><button class=\"btn\" type=\"button\" style=\"padding:4px 8px;font-size:.74rem\" onclick=\"openInvoicePrint('" + safeId + "','a4')\">Imprimir</button> " +
+      "<button class=\"btn\" type=\"button\" style=\"padding:4px 8px;font-size:.74rem\" onclick=\"openInvoicePrint('" + safeId + "','pos')\">POS</button></td>" +
+      "</tr>";
+  });
+  tbody.innerHTML = html || "<tr><td colspan='7'>Sin facturas en este rango.</td></tr>";
+
+  const total = lastInvoicesPayload && typeof lastInvoicesPayload.total_rows === "number" ? lastInvoicesPayload.total_rows : rows.length;
+  const shown = filtered.length;
+  const hasMore = !!(lastInvoicesPayload && lastInvoicesPayload.has_more);
+  setInvoiceMeta_(
+    "Mostrando " + shown + " de " + total + " facturas" + (hasMore ? " (lista recortada por limite)" : "") + "."
+  );
+}
+
+async function loadInvoices_(){
+  const filters = getFilters();
+  filters.set("action", "invoices");
+  filters.set("limit", "800");
+  const res = await fetch(API_URL + "?" + filters.toString(), {cache:"no-store"});
+  if(!res.ok) throw new Error("bad response");
+  const data = await res.json();
+  if(!data || data.ok === false || !Array.isArray(data.rows)){
+    throw new Error((data && data.error) ? data.error : "Respuesta invalida (invoices)");
+  }
+  lastInvoices = data.rows || [];
+  lastInvoicesPayload = data;
+  applyInvoiceSearch_();
+}
+function parseIsoDate(v){
+  if(!v) return null;
+  const d = new Date(v);
+  if(isNaN(d.getTime())) return null;
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+}
+function dailyFromSalesRows(rows, from, to){
+  const out = [];
+  const map = {};
+  const start = parseIsoDate(from);
+  const end = parseIsoDate(to);
+  if(!start || !end) return out;
+
+  (rows || []).forEach(function(r){
+    const d = parseIsoDate(r && r.fecha ? r.fecha : null);
+    if(!d || d < start || d > end) return;
+    const key = d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+    map[key] = (map[key] || 0) + Number(r.total || 0);
+  });
+
+  const cursor = new Date(start);
+  while(cursor <= end){
+    const key = cursor.getFullYear() + "-" + String(cursor.getMonth()+1).padStart(2,"0") + "-" + String(cursor.getDate()).padStart(2,"0");
+    out.push({fecha:key, total: Number(map[key] || 0)});
+    cursor.setDate(cursor.getDate() + 1);
+  }
+  return out;
+}
+async function hydrateDailySalesFallback(data){
+  if(data && Array.isArray(data.dailySales) && data.dailySales.length) return data;
+  const empresa = normalizeEmpresaForApi(localStorage.getItem("empresa") || "");
+  const salesUrl = API_URL + "?action=sales&empresa=" + encodeURIComponent(empresa);
+  const salesRes = await fetch(salesUrl, {cache:"no-store"});
+  if(!salesRes.ok) return data;
+  const salesData = await salesRes.json();
+  const rows = (salesData && Array.isArray(salesData.rows)) ? salesData.rows : [];
+  const from = data && data.range ? data.range.from : document.getElementById("fromDate").value;
+  const to = data && data.range ? data.range.to : document.getElementById("toDate").value;
+  data.dailySales = dailyFromSalesRows(rows, from, to);
+  return data;
+}
+async function loadReports(showLoading){
+  const sync = document.getElementById("sync");
+  try{
+    if(showLoading) sync.textContent = "Sincronizando...";
+    const res = await fetch(API_URL + "?" + getFilters().toString(), {cache:"no-store"});
+    if(!res.ok) throw new Error("bad response");
+    const data = await res.json();
+    if(!data || data.ok === false) throw new Error((data && data.error) ? data.error : "Respuesta invalida");
+    const hydrated = await hydrateDailySalesFallback(data);
+    render(hydrated);
+    try{
+      await loadInvoices_();
+    }catch(invErr){
+      renderInvoicesError_("Facturas: no disponible (" + (invErr && invErr.message ? invErr.message : "error") + "). Actualiza el Apps Script.");
+    }
+    showError("");
+    sync.textContent = "Ultima sincronizacion: " + new Date().toLocaleTimeString("es-CO");
+  }catch(e){
+    render(emptyData());
+    renderInvoicesError_("Sin conexion con la nube.");
+    showError("No se pudo sincronizar reportes: " + (e && e.message ? e.message : "Error de red"));
+    sync.textContent = "Sin conexion con la nube";
+  }
+}
+function setMonthDefaults(){
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth()+1).padStart(2,"0");
+  const d = String(now.getDate()).padStart(2,"0");
+  document.getElementById("fromDate").value = y + "-" + m + "-01";
+  document.getElementById("toDate").value = y + "-" + m + "-" + d;
+  document.getElementById("rangePreset").value = "30d";
+}
+function exportPdf(){
+  const oldTitle = document.title;
+  document.title = "Reporte_FarmaPOS";
+  window.print();
+  setTimeout(function(){ document.title = oldTitle; }, 100);
+}
+function bindEvents(){
+  document.getElementById("rangePreset").addEventListener("change", toggleCustomDates);
+  document.getElementById("btnApply").addEventListener("click", function(){ loadReports(true); });
+  document.getElementById("btnRefresh").addEventListener("click", function(){ loadReports(true); });
+  document.getElementById("btnPdf").addEventListener("click", exportPdf);
+  const search = document.getElementById("invoiceSearch");
+  if(search){
+    search.addEventListener("input", applyInvoiceSearch_);
+  }
+}
+
+guard();
+setMonthDefaults();
+bindEvents();
+toggleCustomDates();
+loadReports(true);
+if(autoTimer) clearInterval(autoTimer);
+autoTimer = setInterval(function(){ loadReports(false); }, 60000);
+
+function toggleSidebar(forceOpen){
+  const layout=document.querySelector(".layout");
+  if(!layout) return;
+  if(typeof forceOpen === "boolean") layout.classList.toggle("sidebar-open", forceOpen);
+  else layout.classList.toggle("sidebar-open");
+}
+window.addEventListener("resize",()=>{ if(window.innerWidth>860) toggleSidebar(false); });
+document.querySelectorAll(".menu a").forEach(a=>a.addEventListener("click",()=>{ if(window.innerWidth<=860) toggleSidebar(false); }));
+</script>
+</body>
+</html>
+
+
+

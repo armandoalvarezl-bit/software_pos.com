@@ -1,0 +1,941 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pedidos | FarmaPOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+<link rel="icon" type="image/png" href="image/Logo.png" />
+<style>
+:root{
+  --bg:#eef6f3;
+  --panel:#ffffff;
+  --panel-soft:#f6fbfa;
+  --line:#d7ece6;
+  --ink:#0f172a;
+  --muted:#64748b;
+  --brand:#0f766e;
+  --brand2:#14b8a6;
+  --brand-soft:#ccfbf1;
+  --warn:#d97706;
+  --danger:#dc2626;
+  --shadow:0 16px 38px rgba(2,44,34,.08);
+}
+
+/* Reset */
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:"Poppins",sans-serif;
+}
+
+input, select, textarea, button{
+  font-family:inherit;
+}
+
+body{
+  background:
+    radial-gradient(circle at top left,rgba(20,184,166,.12),transparent 28%),
+    linear-gradient(180deg,#f7fbfa 0%,var(--bg) 100%);
+  color:var(--ink);
+  min-height:100vh;
+}
+
+/* Layout */
+.layout{
+  display:block;
+  padding-left:270px;
+  min-height:100vh;
+  width:100%;
+}
+
+/* Sidebar */
+.sidebar{
+  background:linear-gradient(180deg,#064e3b 0%,#022c22 100%);
+  color:#ecfdf5;
+  padding:24px 18px;
+  position:fixed;
+  top:0;
+  left:0;
+  bottom:0;
+  width:270px;
+  overflow-y:auto;
+  z-index:1000;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:700;
+  font-size:1.2rem;
+  margin-bottom:24px;
+}
+
+.brand-logo{
+  width:36px;
+  height:36px;
+  border-radius:10px;
+  object-fit:contain;
+  background:rgba(255,255,255,.16);
+  padding:4px;
+}
+
+.menu a{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:#d1fae5;
+  text-decoration:none;
+  padding:10px 12px;
+  border-radius:11px;
+  margin-bottom:6px;
+  transition:.25s;
+  cursor:pointer;
+}
+
+.menu a.active,
+.menu a:hover{
+  background:rgba(255,255,255,.13);
+  color:#fff;
+}
+
+/* Main */
+.main{
+  padding:22px 18px 28px;
+  width:100%;
+}
+
+/* Top bar */
+.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:10px;
+  background:rgba(255,255,255,.92);
+  border:1px solid var(--line);
+  padding:16px 18px;
+  border-radius:18px;
+  margin-bottom:14px;
+  box-shadow:var(--shadow);
+}
+
+.top-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.module-title{
+  font-weight:700;
+  font-size:1.08rem;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.logout{
+  border:1px solid #bbf7d0;
+  background:#f0fdf4;
+  color:#065f46;
+  padding:8px 12px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+/* Grid cards */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:12px;
+  margin-bottom:14px;
+}
+
+.card{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:16px;
+  box-shadow:var(--shadow);
+  transition: transform .2s ease;
+}
+
+.card:hover{
+  transform:translateY(-2px);
+}
+
+.muted{
+  color:var(--muted);
+  font-size:.85rem;
+}
+
+.big{
+  font-size:1.5rem;
+  font-weight:700;
+  color:var(--brand);
+}
+
+.kpi-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+.kpi-icon{
+  width:40px;
+  height:40px;
+  border-radius:14px;
+  display:grid;
+  place-items:center;
+  background:var(--panel-soft);
+  color:var(--brand);
+  font-size:1.1rem;
+}
+
+.kpi-note{
+  font-size:.76rem;
+  color:var(--muted);
+  margin-top:6px;
+}
+
+/* Workspace */
+.workspace{
+  display:grid;
+  grid-template-columns:minmax(0,1.15fr) minmax(360px,.85fr);
+  gap:14px;
+  align-items:start;
+}
+
+.section-title{
+  font-weight:700;
+  font-size:1rem;
+  margin-bottom:4px;
+}
+
+.section-subtitle{
+  color:var(--muted);
+  font-size:.84rem;
+}
+
+/* Forms */
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  margin-top:14px;
+}
+
+.field.span-2{
+  grid-column:span 2;
+}
+
+.field label{
+  display:block;
+  font-size:.8rem;
+  font-weight:600;
+  color:#475569;
+  margin-bottom:6px;
+}
+
+.form-grid input,
+.form-grid select,
+.form-grid textarea{
+  width:100%;
+  padding:11px 12px;
+  border:1px solid #cbd5e1;
+  border-radius:12px;
+  font-size:.92rem;
+  background:#fff;
+}
+
+.form-grid textarea{
+  min-height:108px;
+  resize:vertical;
+}
+
+.form-grid input:focus,
+.form-grid select:focus,
+.form-grid textarea:focus{
+  outline:none;
+  border-color:#10b981;
+  box-shadow:0 0 0 3px rgba(16,185,129,.15);
+}
+
+/* Buttons */
+.btn{
+  border:none;
+  background:linear-gradient(135deg,var(--brand),var(--brand2));
+  color:#fff;
+  padding:11px 14px;
+  border-radius:12px;
+  cursor:pointer;
+  font-weight:700;
+}
+
+.btn.secondary{
+  background:#e2e8f0;
+  color:#0f172a;
+  border:1px solid #cbd5e1;
+}
+
+.btn.warn{
+  background:linear-gradient(135deg,#f59e0b,#d97706);
+}
+
+.btn.danger{
+  background:linear-gradient(135deg,#ef4444,#dc2626);
+}
+
+.btn:hover{
+  transform:translateY(-1px);
+}
+
+/* Accesibilidad */
+button:focus,
+a:focus{
+  outline:2px solid #10b981;
+  outline-offset:2px;
+}
+
+/* Actions */
+.action-row{
+  margin-top:12px;
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.form-status{
+  margin-top:10px;
+  font-size:.85rem;
+  min-height:18px;
+  color:var(--brand);
+}
+
+.source-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:6px 10px;
+  border-radius:999px;
+  background:#ecfeff;
+  color:#155e75;
+  font-size:.78rem;
+  font-weight:700;
+  border:1px solid #bae6fd;
+}
+
+/* Quick panel */
+.quick-panel{
+  display:grid;
+  gap:10px;
+  margin-top:14px;
+}
+
+.quick-stat{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:12px 14px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:var(--panel-soft);
+}
+
+.quick-stat strong{
+  font-size:1.05rem;
+  color:var(--brand);
+}
+
+/* Toolbar */
+.toolbar{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 190px 190px auto;
+  gap:10px;
+  align-items:end;
+  margin-top:14px;
+}
+
+.toolbar .field{
+  margin:0;
+}
+
+/* Table */
+.table-wrap{
+  margin-top:14px;
+  overflow:auto;
+  border:1px solid #edf5f3;
+  border-radius:16px;
+}
+
+.table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:900px;
+}
+
+.table thead{
+  background:#f0fdfa;
+}
+
+.table th,
+.table td{
+  padding:11px 10px;
+  border-bottom:1px solid #ecfeff;
+  text-align:left;
+  font-size:.9rem;
+  word-break:break-word;
+  vertical-align:top;
+}
+
+.table th{
+  font-size:.78rem;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  color:#475569;
+}
+
+/* Status */
+.status{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:5px 11px;
+  border-radius:999px;
+  font-size:.78rem;
+  font-weight:700;
+  text-transform:capitalize;
+}
+
+.status.enviado{background:#e0f2fe;color:#0369a1}
+.status.recibido{background:#dcfce7;color:#166534}
+.status.pendiente{background:#fff7ed;color:#b45309}
+.status.cancelado{background:#fee2e2;color:#b91c1c}
+
+/* Actions */
+.actions{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+}
+
+.actions button{
+  padding:7px 10px;
+  border-radius:10px;
+}
+
+/* Empty */
+.empty{
+  padding:26px 18px;
+  text-align:center;
+  color:var(--muted);
+}
+
+/* Mobile menu */
+.menu-toggle{
+  display:none;
+  border:1px solid #cdeee2;
+  background:#fff;
+  color:#065f46;
+  border-radius:8px;
+  padding:6px 9px;
+  cursor:pointer;
+}
+
+.sidebar-overlay{
+  display:none;
+}
+
+/* Responsive */
+@media(max-width:1200px){
+  .workspace{grid-template-columns:1fr}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+@media(max-width:860px){
+
+  .layout{
+    padding-left:0;
+  }
+
+  .sidebar{
+    transform:translateX(-110%);
+    transition:transform .2s ease;
+    box-shadow:0 18px 60px rgba(2,44,34,.22);
+    z-index:1000;
+  }
+
+  .menu-toggle{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .sidebar-overlay{
+    display:block;
+    position:fixed;
+    inset:0;
+    background:rgba(2,44,34,.35);
+    background:blur(2px);
+    z-index:900;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .2s ease;
+  }
+
+  .layout.sidebar-open .sidebar{
+    transform:translateX(0);
+  }
+
+  .layout.sidebar-open .sidebar-overlay{
+    opacity:1;
+    pointer-events:auto;
+  }
+
+  .grid{
+    grid-template-columns:1fr;
+  }
+
+  .form-grid,
+  .toolbar{
+    grid-template-columns:1fr;
+  }
+
+  .field.span-2{
+    grid-column:span 1;
+  }
+}
+.input{
+  width:100%;
+  padding:10px 12px;
+  border:1px solid #cbd5e1;
+  border-radius:10px;
+  font-size:.9rem;
+  background:#fff;
+}
+
+.input:focus{
+  outline:none;
+  border-color:#10b981;
+  box-shadow:0 0 0 3px rgba(16,185,129,.15);
+}
+.field input,
+.field select,
+.field textarea{
+  width:100%;
+  padding:11px 12px;
+  border:1px solid #cbd5e1;
+  border-radius:12px;
+  font-size:.92rem;
+  background:#fff;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus{
+  outline:none;
+  border-color:#10b981;
+  box-shadow:0 0 0 3px rgba(16,185,129,.15);
+}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+<div class="brand">
+<img src="image/Logo.png" class="brand-logo" alt="Logo">
+<div>FarmaPOS</div>
+</div>
+<nav class="menu">
+<a href="dashboard.html"><i class="bi bi-speedometer2"></i> Dashboard</a>
+<a href="pos.html"><i class="bi bi-cart-plus"></i> Ventas</a>
+<a href="inventario.html"><i class="bi bi-box-seam"></i> Inventario</a>
+<a href="reportes.html"><i class="bi bi-file-earmark-bar-graph"></i> Reportes</a>
+<a href="pedidos.html" class="active"><i class="bi bi-truck"></i> Pedidos</a>
+</nav>
+</aside>
+<div class="sidebar-overlay" onclick="toggleSidebar(false)"></div>
+<main class="main">
+<section class="top">
+<div class="top-left">
+<button class="menu-toggle" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+<div>
+<div class="module-title"><i class="bi bi-truck"></i> Pedidos a laboratorios</div>
+<div class="muted">Seguimiento de compras, recepciones y compromisos con proveedores</div>
+</div>
+</div>
+<button class="logout" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Cerrar sesion</button>
+</section>
+<section class="grid">
+<article class="card"><div class="kpi-head"><div><div class="muted">Pedidos en curso</div><div class="big" id="kpiOpen">0</div></div><div class="kpi-icon"><i class="bi bi-hourglass-split"></i></div></div><div class="kpi-note">Pendientes y enviados sin cierre.</div></article>
+<article class="card"><div class="kpi-head"><div><div class="muted">Recibidos este mes</div><div class="big" id="kpiReceived">0</div></div><div class="kpi-icon"><i class="bi bi-box2-check"></i></div></div><div class="kpi-note">Entradas confirmadas en el mes actual.</div></article>
+<article class="card"><div class="kpi-head"><div><div class="muted">Total pendiente</div><div class="big" id="kpiValue">$0</div></div><div class="kpi-icon"><i class="bi bi-cash-stack"></i></div></div><div class="kpi-note">Valor esperado de pedidos abiertos.</div></article>
+<article class="card"><div class="kpi-head"><div><div class="muted">Vencidos o urgentes</div><div class="big" id="kpiLate">0</div></div><div class="kpi-icon"><i class="bi bi-exclamation-triangle"></i></div></div><div class="kpi-note">Con entrega pasada y aun sin recibir.</div></article>
+</section>
+<section class="workspace">
+<section class="card">
+<div class="section-title">Crear o actualizar pedido</div>
+<div class="section-subtitle">Selecciona productos desde el mismo catalogo online que usa el POS.</div>
+<div style="margin-top:10px"><span class="source-badge" id="sourceStatus"><i class="bi bi-cloud-check"></i> Conectando catalogo...</span></div>
+<div class="form-grid">
+<div class="field"><label for="lab">Laboratorio / proveedor</label><input id="lab" placeholder="Ej. Genfar"></div>
+<div class="field"><label for="contacto">Contacto / asesor</label><input id="contacto" placeholder="Nombre o telefono"></div>
+<div class="field span-2"><label for="productoPedido">Producto del catalogo</label><input id="productoPedido" list="productosCatalogo" placeholder="Buscar producto online por nombre o codigo"><datalist id="productosCatalogo"></datalist></div>
+<div class="field"><label for="codigoPedido">Codigo</label><input id="codigoPedido" placeholder="Se completa automaticamente"></div>
+<div class="field"><label for="referencia">Referencia / presentacion</label><input id="referencia" placeholder="Detalle adicional"></div>
+<div class="field"><label for="cantidad">Cantidad solicitada</label><input id="cantidad" type="number" min="1" step="1" value="1"></div>
+<div class="field"><label for="monto">Monto esperado</label><input id="monto" type="number" step="0.01" placeholder="0"></div>
+<div class="field"><label for="stockActual">Stock actual</label><input id="stockActual" readonly placeholder="Informativo"></div>
+<div class="field"><label for="fechaEnvio">Fecha de envio</label><input id="fechaEnvio" type="date"></div>
+<div class="field"><label for="fechaEntrega">Fecha compromiso</label><input id="fechaEntrega" type="date"></div>
+<div class="field span-2"><label for="estado">Estado</label><select id="estado"><option value="pendiente">Pendiente</option><option value="enviado">Enviado</option><option value="recibido">Recibido</option><option value="cancelado">Cancelado</option></select></div>
+<div class="field span-2"><label for="notas">Notas</label><textarea id="notas" placeholder="Detalles del pedido, faltantes, lote acordado, observaciones..."></textarea></div>
+</div>
+<div class="action-row">
+<button class="btn" onclick="guardarPedido()">Guardar pedido</button>
+<button class="btn secondary" onclick="limpiarForm()">Limpiar</button>
+</div>
+<div class="form-status" id="formStatus"></div>
+</section>
+<aside class="card">
+<div class="section-title">Resumen rapido</div>
+<div class="section-subtitle">Vista compacta del estado actual de compras.</div>
+<div class="quick-panel">
+<div class="quick-stat"><span>Pedidos totales</span><strong id="quickTotal">0</strong></div>
+<div class="quick-stat"><span>Pendientes</span><strong id="quickPending">0</strong></div>
+<div class="quick-stat"><span>Enviados</span><strong id="quickShipped">0</strong></div>
+<div class="quick-stat"><span>Recibidos</span><strong id="quickDone">0</strong></div>
+</div>
+</aside>
+</section>
+<section class="card" style="margin-top:14px">
+<div class="section-title">Seguimiento de pedidos</div>
+<div class="section-subtitle">Filtra por texto o por estado y administra cada pedido sin salir de la tabla.</div>
+<div class="toolbar">
+<div class="field"><label for="busqueda">Buscar</label><input id="busqueda" placeholder="Laboratorio, producto, codigo, referencia o notas"></div>
+<div class="field"><label for="filterEstado">Estado</label><select id="filterEstado"><option value="">Todos</option><option value="pendiente">Pendiente</option><option value="enviado">Enviado</option><option value="recibido">Recibido</option><option value="cancelado">Cancelado</option></select></div>
+<div class="field"><label for="ordenFecha">Orden</label><select id="ordenFecha"><option value="entrega_asc">Entrega mas cercana</option><option value="entrega_desc">Entrega mas lejana</option><option value="monto_desc">Mayor monto</option><option value="monto_asc">Menor monto</option></select></div>
+<div class="action-row" style="margin-top:0"><button class="btn secondary" onclick="exportarPedidos()"><i class="bi bi-download"></i> Exportar JSON</button></div>
+</div>
+<div class="table-wrap">
+<table class="table">
+<thead>
+<tr>
+<th>Laboratorio</th>
+<th>Producto</th>
+<th>Codigo</th>
+<th>Cantidad</th>
+<th>Monto</th>
+<th>Envio</th>
+<th>Entrega</th>
+<th>Estado</th>
+<th>Notas</th>
+<th>Acciones</th>
+</tr>
+</thead>
+<tbody id="pedidoRows"><tr><td colspan="10" class="empty">Sin pedidos aun.</td></tr></tbody>
+</table>
+</div>
+</section>
+</main>
+</div>
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbyFLOGgEaFphE3v37G_P3H8-xp1mvnTH7hiH7q4m-7f1NFFF--SUetLzDRSmhGxkeNP/exec";
+const STORAGE_KEY="pedidos_lab";
+let editIndex=null;
+let productCatalog=[];
+let ordersMode="api";
+let pedidoRefs=[];
+
+function logout(){window.location.href="index.html";}
+function toggleSidebar(force){const layout=document.querySelector(".layout");if(force===false){layout.classList.remove("sidebar-open");return;}layout.classList.toggle("sidebar-open");}
+function money(v){return "$"+Math.round(Number(v||0)).toLocaleString("es-CO");}
+function escapeHtml(str){return String(str||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));}
+function normalize(s){return String(s||"").trim().toLowerCase();}
+function getEmpresa(){return String(localStorage.getItem("empresa")||"").trim();}
+function setSourceStatus(text,isWarn){const el=document.getElementById("sourceStatus");if(!el)return;el.innerHTML=(isWarn?'<i class="bi bi-exclamation-circle"></i> ':'<i class="bi bi-cloud-check"></i> ')+text;el.style.background=isWarn?"#fff7ed":"#ecfeff";el.style.color=isWarn?"#9a3412":"#155e75";el.style.borderColor=isWarn?"#fed7aa":"#bae6fd";}
+function loadPedidosLocal(){const raw=localStorage.getItem(STORAGE_KEY);try{return raw?JSON.parse(raw):[]}catch(e){return [];}}
+function savePedidosLocal(list){localStorage.setItem(STORAGE_KEY,JSON.stringify(list));}
+
+async function fetchJson(url,opts){
+    const res=await fetch(url,opts||{cache:"no-store"});
+    const data=await res.json();
+    if(!res.ok||!data||data.ok===false)throw new Error((data&&data.error)||"No se pudo completar la solicitud");
+    return data;
+}
+
+async function loadPedidos(){
+    if(ordersMode!=="api")return loadPedidosLocal();
+    try{
+        const empresa=encodeURIComponent(getEmpresa());
+        const data=await fetchJson(`${API_URL}?action=orders&empresa=${empresa}`,{cache:"no-store"});
+        console.log("Datos recibidos de la API:", data); // Debug
+        return Array.isArray(data.rows)?data.rows:[];
+    }catch(e){
+        console.error("Error al cargar pedidos:", e); // Debug
+        ordersMode="local";
+        setSourceStatus("Modo local: el backend de pedidos aun no esta desplegado",true);
+        return loadPedidosLocal();
+    }
+}
+
+async function savePedidoRemote(payload,isEdit){const body=new URLSearchParams(Object.assign({},payload,{action:isEdit?"update_order":"add_order"})).toString();return fetchJson(API_URL,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},body});}
+async function deletePedidoRemote(id_pedido){const body=new URLSearchParams({action:"delete_order",id_pedido:String(id_pedido||"")}).toString();return fetchJson(API_URL,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},body});}
+function isOpenStatus(estado){return estado!=="recibido"&&estado!=="cancelado";}
+function normalizeDateValue(value){if(!value)return 0;const t=new Date(value+"T00:00:00").getTime();return Number.isFinite(t)?t:0;}
+
+async function loadCatalog(){
+    try{
+        const empresa=encodeURIComponent(getEmpresa());
+        const data=await fetchJson(`${API_URL}?action=pos_catalog&empresa=${empresa}`,{cache:"no-store"});
+        productCatalog=Array.isArray(data.rows)?data.rows:[];
+        document.getElementById("productosCatalogo").innerHTML=productCatalog.map(p=>`<option value="${escapeHtml(p.producto||"")}" label="${escapeHtml((p.codigo||"Sin codigo")+" | "+money(p.precio_venta||0))}"></option>`).join("");
+        setSourceStatus(`Catalogo online cargado: ${productCatalog.length} productos`,false);
+    }catch(e){
+        console.error("Error al cargar catalogo:", e);
+        productCatalog=[];
+        setSourceStatus("No se pudo conectar al catalogo online",true);
+    }
+}
+
+function fillProductData(){const name=normalize(document.getElementById("productoPedido").value);const found=productCatalog.find(p=>normalize(p.producto)===name||normalize(p.codigo)===name);if(!found)return;document.getElementById("productoPedido").value=found.producto||"";document.getElementById("codigoPedido").value=found.codigo||"";document.getElementById("stockActual").value=String(Number(found.stock||0));if(!Number(document.getElementById("monto").value||0))document.getElementById("monto").value=Number(found.precio_venta||0);if(!document.getElementById("referencia").value.trim())document.getElementById("referencia").value=found.producto||"";}
+
+function actualizarKpi(list){
+    document.getElementById("kpiOpen").textContent=list.filter(p=>isOpenStatus(normalize(p.estado))).length;
+    const now=new Date();
+    const month=now.getMonth();
+    const year=now.getFullYear();
+    document.getElementById("kpiReceived").textContent=list.filter(p=>normalize(p.estado)==="recibido").filter(p=>{
+        const f=p.fechaEntrega||p.fecha_entrega;
+        const d=f?new Date(f+"T00:00:00"):null;
+        return d&&d.getFullYear()===year&&d.getMonth()===month;
+    }).length;
+    const pendingTotal=list.filter(p=>isOpenStatus(normalize(p.estado))).reduce((s,p)=>s+Number(p.monto||0),0);
+    document.getElementById("kpiValue").textContent=money(pendingTotal);
+    const todayStart=new Date();
+    todayStart.setHours(0,0,0,0);
+    document.getElementById("kpiLate").textContent=list.filter(p=>{
+        const estado=normalize(p.estado);
+        const f=p.fechaEntrega||p.fecha_entrega;
+        if(!isOpenStatus(estado)||!f)return false;
+        return new Date(f+"T00:00:00").getTime()<todayStart.getTime();
+    }).length;
+    document.getElementById("quickTotal").textContent=list.length;
+    document.getElementById("quickPending").textContent=list.filter(p=>normalize(p.estado)==="pendiente").length;
+    document.getElementById("quickShipped").textContent=list.filter(p=>normalize(p.estado)==="enviado").length;
+    document.getElementById("quickDone").textContent=list.filter(p=>normalize(p.estado)==="recibido").length;
+}
+
+function limpiarForm(){
+    editIndex=null;
+    ["lab","contacto","productoPedido","codigoPedido","referencia","monto","stockActual","fechaEnvio","fechaEntrega","notas"].forEach(id=>{
+        const el=document.getElementById(id);
+        if(el)el.value="";
+    });
+    document.getElementById("cantidad").value=1;
+    document.getElementById("estado").value="pendiente";
+    document.getElementById("formStatus").textContent="";
+}
+
+async function guardarPedido(){
+    fillProductData();
+    const lab=document.getElementById("lab").value.trim();
+    const producto=document.getElementById("productoPedido").value.trim();
+    if(!lab){document.getElementById("formStatus").textContent="El laboratorio es obligatorio.";return;}
+    if(!producto){document.getElementById("formStatus").textContent="Selecciona un producto del catalogo.";return;}
+    const payload={
+        empresa:getEmpresa(),
+        id_pedido:editIndex&&editIndex.row&&editIndex.row.id_pedido?editIndex.row.id_pedido:"",
+        lab,
+        contacto:document.getElementById("contacto").value.trim(),
+        producto,
+        codigo:document.getElementById("codigoPedido").value.trim(),
+        referencia:document.getElementById("referencia").value.trim(),
+        cantidad:Number(document.getElementById("cantidad").value||0),
+        monto:Number(document.getElementById("monto").value||0),
+        stock_actual:Number(document.getElementById("stockActual").value||0),
+        fecha_envio:document.getElementById("fechaEnvio").value,
+        fecha_entrega:document.getElementById("fechaEntrega").value,
+        estado:document.getElementById("estado").value,
+        notas:document.getElementById("notas").value.trim()
+    };
+    try{
+        if(ordersMode==="api"){
+            await savePedidoRemote(payload,!!(editIndex&&editIndex.row&&editIndex.row.id_pedido));
+        }else{
+            const list=loadPedidosLocal();
+            if(editIndex&&editIndex.__localIndex!=null&&list[editIndex.__localIndex])
+                list[editIndex.__localIndex]=Object.assign({},list[editIndex.__localIndex],payload);
+            else
+                list.push(Object.assign({id_pedido:"LOCAL-"+Date.now()},payload));
+            savePedidosLocal(list);
+        }
+        document.getElementById("formStatus").textContent="Pedido guardado correctamente.";
+        limpiarForm();
+        await renderPedidos();
+    }catch(e){
+        document.getElementById("formStatus").textContent=e.message||"No se pudo guardar el pedido.";
+    }
+}
+
+function editar(ref){
+    const meta=pedidoRefs[ref];
+    const p=meta&&meta.row?meta.row:null;
+    if(!p)return;
+    editIndex=meta;
+    document.getElementById("lab").value=p.lab||"";
+    document.getElementById("contacto").value=p.contacto||"";
+    document.getElementById("productoPedido").value=p.producto||"";
+    document.getElementById("codigoPedido").value=p.codigo||"";
+    document.getElementById("referencia").value=p.referencia||"";
+    document.getElementById("cantidad").value=Number(p.cantidad||1);
+    document.getElementById("monto").value=Number(p.monto||0);
+    document.getElementById("stockActual").value=Number(p.stock_actual||0);
+    document.getElementById("fechaEnvio").value=p.fechaEnvio||p.fecha_envio||"";
+    document.getElementById("fechaEntrega").value=p.fechaEntrega||p.fecha_entrega||"";
+    document.getElementById("estado").value=normalize(p.estado)||"pendiente";
+    document.getElementById("notas").value=p.notas||"";
+    document.getElementById("formStatus").textContent="Editando pedido seleccionado.";
+    window.scrollTo({top:0,behavior:"smooth"});
+}
+
+async function cambiarEstado(ref,estado){
+    const meta=pedidoRefs[ref];
+    if(!meta||!meta.row)return;
+    const row=meta.row;
+    try{
+        if(ordersMode==="api")
+            await savePedidoRemote({id_pedido:row.id_pedido,estado,empresa:getEmpresa()},true);
+        else{
+            const list=loadPedidosLocal();
+            if(meta.__localIndex!=null&&list[meta.__localIndex])list[meta.__localIndex].estado=estado;
+            savePedidosLocal(list);
+        }
+        await renderPedidos();
+    }catch(e){
+        console.error("Error al cambiar estado:", e);
+    }
+}
+
+async function borrar(ref){
+    const meta=pedidoRefs[ref];
+    if(!meta||!meta.row)return;
+    if(!confirm("¿Seguro que deseas eliminar este pedido?"))return;
+    try{
+        if(ordersMode==="api")
+            await deletePedidoRemote(meta.row.id_pedido);
+        else{
+            const list=loadPedidosLocal();
+            if(meta.__localIndex!=null)list.splice(meta.__localIndex,1);
+            savePedidosLocal(list);
+        }
+        if(editIndex&&meta.row.id_pedido&&editIndex.row&&editIndex.row.id_pedido===meta.row.id_pedido)limpiarForm();
+        await renderPedidos();
+    }catch(e){
+        console.error("Error al borrar:", e);
+    }
+}
+
+function getFilteredPedidos(raw){
+    const search=normalize(document.getElementById("busqueda").value||"");
+    const estadoFiltro=normalize(document.getElementById("filterEstado").value||"");
+    const orden=document.getElementById("ordenFecha").value||"entrega_asc";
+    const data=raw.map((row,index)=>({row,__localIndex:index})).filter(({row})=>{
+        const hayTexto=!search||[row.lab,row.contacto,row.producto,row.codigo,row.referencia,row.notas].some(v=>normalize(v).includes(search));
+        const hayEstado=!estadoFiltro||normalize(row.estado)===estadoFiltro;
+        return hayTexto&&hayEstado;
+    });
+    data.sort((a,b)=>{
+        if(orden==="monto_desc")return Number(b.row.monto||0)-Number(a.row.monto||0);
+        if(orden==="monto_asc")return Number(a.row.monto||0)-Number(b.row.monto||0);
+        const av=normalizeDateValue(a.row.fechaEntrega||a.row.fecha_entrega);
+        const bv=normalizeDateValue(b.row.fechaEntrega||b.row.fecha_entrega);
+        return orden==="entrega_desc"?bv-av:av-bv;
+    });
+    return data;
+}
+
+function exportarPedidos(){
+    const blob=new Blob([JSON.stringify(window.__pedidosCache||[],null,2)],{type:"application/json;charset=utf-8"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=url;
+    a.download="pedidos-farmapos.json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),400);
+}
+
+async function renderPedidos(){
+    const raw=await loadPedidos();
+    window.__pedidosCache=raw;
+    console.log("Pedidos cargados:", raw.length, raw); // Debug
+
+    const data=getFilteredPedidos(raw);
+    const rows=document.getElementById("pedidoRows");
+    pedidoRefs=[];
+
+    if(!data.length){
+        rows.innerHTML="<tr><td colspan='10' class='empty'>Sin pedidos para los filtros actuales.</td></tr>";
+        actualizarKpi(raw);
+        return;
+    }
+
+    // FIX: Construir todo el HTML primero y luego asignarlo de una vez
+    let html = "";
+    data.forEach(meta=>{
+        const ref=pedidoRefs.push(meta)-1;
+        const p=meta.row;
+        const estado=normalize(p.estado)||"pendiente";
+        html+=`<tr>
+            <td>${escapeHtml(p.lab||"-")}</td>
+            <td>${escapeHtml(p.producto||p.contacto||"-")}</td>
+            <td>${escapeHtml(p.codigo||"-")}</td>
+            <td>${escapeHtml(String(p.cantidad||0))}</td>
+            <td>${money(p.monto)}</td>
+            <td>${escapeHtml(p.fechaEnvio||p.fecha_envio||"-")}</td>
+            <td>${escapeHtml(p.fechaEntrega||p.fecha_entrega||"-")}</td>
+            <td><span class="status ${escapeHtml(estado)}">${escapeHtml(estado)}</span></td>
+            <td>${escapeHtml(p.notas||"-")}</td>
+            <td><div class="actions">
+                <button class="btn secondary" onclick="editar(${ref})">Editar</button>
+                <button class="btn warn" onclick="cambiarEstado(${ref},'recibido')">Recibido</button>
+                <button class="btn danger" onclick="borrar(${ref})">Borrar</button>
+            </div></td>
+        </tr>`;
+    });
+    rows.innerHTML = html; // Asignar todo de una vez
+
+    actualizarKpi(raw);
+}
+
+document.getElementById("busqueda").addEventListener("input",renderPedidos);
+document.getElementById("filterEstado").addEventListener("change",renderPedidos);
+document.getElementById("ordenFecha").addEventListener("change",renderPedidos);
+document.getElementById("productoPedido").addEventListener("change",fillProductData);
+document.getElementById("productoPedido").addEventListener("blur",fillProductData);
+
+window.addEventListener("load",async()=>{
+    console.log("Iniciando carga de datos..."); // Debug
+    console.log("Empresa:", getEmpresa()); // Debug
+    await loadCatalog();
+    await renderPedidos();
+});
+</script>
+</body>
+</html>
+
+
+
+
+

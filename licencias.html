@@ -1,0 +1,193 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Licencias | FarmaPOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:"Poppins",sans-serif}
+body{background:#eefbf5;color:#0f172a;padding:20px}
+.wrap{max-width:980px;margin:0 auto}
+.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.title{font-size:1.2rem;font-weight:700;color:#065f46}
+.btn{border:1px solid #bbf7d0;background:#f0fdf4;color:#065f46;border-radius:10px;padding:8px 12px;cursor:pointer;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(220px,1fr));gap:12px;margin-bottom:16px}
+.card{background:#fff;border:1px solid #d1fae5;border-radius:14px;padding:14px;box-shadow:0 8px 20px rgba(2,44,34,.06)}
+.plan{font-size:.85rem;color:#64748b}
+.price{font-size:1.45rem;font-weight:700;color:#065f46;margin:6px 0}
+.ul{font-size:.85rem;color:#334155;line-height:1.6;margin:8px 0 12px 14px}
+.status{background:#fff;border:1px solid #d1fae5;border-radius:14px;padding:14px;margin-bottom:12px}
+.status h3{font-size:1rem;color:#065f46;margin-bottom:8px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.input{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:9px}
+.msg{margin-top:8px;font-size:.85rem}
+@media(max-width:900px){.grid,.row{grid-template-columns:1fr}}
+.menu-toggle{display:none;border:1px solid #cdeee2;background:#fff;color:#065f46;border-radius:8px;padding:6px 9px;cursor:pointer}
+.sidebar-overlay{display:none}
+
+@media(max-width:860px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{display:block;position:fixed;left:0;top:0;bottom:0;width:270px;z-index:50;transform:translateX(-110%);transition:transform .2s ease;box-shadow:0 18px 60px rgba(2,44,34,.22)}
+  .menu-toggle{display:inline-flex;align-items:center;justify-content:center}
+  .sidebar-overlay{display:block;position:fixed;inset:0;background:rgba(2,44,34,.35);backdrop-filter:blur(2px);z-index:40;opacity:0;pointer-events:none;transition:opacity .2s ease}
+  .layout.sidebar-open .sidebar{transform:translateX(0)}
+  .layout.sidebar-open .sidebar-overlay{opacity:1;pointer-events:auto}
+  .grid{grid-template-columns:1fr}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <div class="title">Licencias FarmaPOS</div>
+    <button class="btn" onclick="window.location.href='dashboard.html'">Volver</button>
+  </div>
+
+  <section class="status">
+    <h3>Estado actual</h3>
+    <div id="licenseState">Cargando...</div>
+  </section>
+
+  <section class="grid">
+    <article class="card">
+      <div class="plan">Plan trimestral</div>
+      <div class="price">3 meses</div>
+      <ul class="ul">
+        <li>Todos los modulos habilitados</li>
+        <li>Soporte por WhatsApp</li>
+        <li>Actualizaciones incluidas</li>
+      </ul>
+      <button class="btn" onclick="requestPlan('3 meses')">Obtener licencia</button>
+    </article>
+    <article class="card">
+      <div class="plan">Plan semestral</div>
+      <div class="price">6 meses</div>
+      <ul class="ul">
+        <li>Todos los modulos habilitados</li>
+        <li>Prioridad en soporte</li>
+        <li>Mejor costo por mes</li>
+      </ul>
+      <button class="btn" onclick="requestPlan('6 meses')">Obtener licencia</button>
+    </article>
+    <article class="card">
+      <div class="plan">Plan anual</div>
+      <div class="price">12 meses</div>
+      <ul class="ul">
+        <li>Licencia completa por 1 aÃ±o</li>
+        <li>Soporte prioritario</li>
+        <li>Precio preferencial</li>
+      </ul>
+      <button class="btn" onclick="requestPlan('12 meses')">Obtener licencia</button>
+    </article>
+  </section>
+
+  <section class="status" id="activar">
+    <h3>Activar programa</h3>
+    <div class="row">
+      <input class="input" id="activationCode" placeholder="Codigo de activacion">
+      <select class="input" id="activationPlan">
+        <option value="3">Licencia 3 meses</option>
+        <option value="6">Licencia 6 meses</option>
+        <option value="12">Licencia 12 meses</option>
+      </select>
+    </div>
+    <button class="btn" style="margin-top:10px" onclick="activateLocalLicense()">Activar ahora</button>
+    <div class="msg" id="msg"></div>
+  </section>
+</div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycby9Rf23ERVyl9LwZvQBycddgtxyyx3R8OsqlX0Fyyr7hKuYqnKnEJTGDXH72HyFsrSg/exec";
+function formatDate(d){ return d.toISOString().slice(0,10); }
+function decodeEmpresa_(raw){
+  let s = String(raw || "").trim();
+  if(!s) return "";
+  // Evita doble/triple-encode cuando `empresa` queda guardada como URL-encoded
+  // (ej: "Sede%20principal" o "Sede%2520principal").
+  s = s.replace(/\+/g," ");
+  for(let i=0;i<3 && /%[0-9a-fA-F]{2}/.test(s);i++){
+    try{
+      const decoded = decodeURIComponent(s);
+      if(decoded === s) break;
+      s = decoded;
+    }catch(_){
+      break;
+    }
+  }
+  return String(s || "").trim();
+}
+function renderState(){
+  const plan = localStorage.getItem("licencia_plan") || "Sin plan";
+  const st = localStorage.getItem("licencia_estado") || "desconocido";
+  const fin = localStorage.getItem("licencia_fin") || "-";
+  const dias = localStorage.getItem("licencia_dias") || "-";
+  document.getElementById("licenseState").innerHTML = `
+    Plan: <strong>${plan}</strong><br>
+    Estado: <strong>${st}</strong><br>
+    Vence: <strong>${fin}</strong><br>
+    Dias restantes: <strong>${dias}</strong>
+  `;
+}
+
+function requestPlan(plan){
+  const empresa = decodeEmpresa_(localStorage.getItem("empresa") || "FarmaPOS") || "FarmaPOS";
+  const txt = encodeURIComponent(`Hola, quiero activar licencia FarmaPOS plan ${plan} para la empresa ${empresa}.`);
+  const wa = `https://wa.me/573001234567?text=${txt}`;
+  window.open(wa, "_blank");
+}
+
+async function activateLocalLicense(){
+  const code = String(document.getElementById("activationCode").value || "").trim();
+  const months = Number(document.getElementById("activationPlan").value || 0);
+  const msg = document.getElementById("msg");
+  if(!code || code.length < 6){
+    msg.style.color = "#b91c1c";
+    msg.textContent = "Ingresa un codigo de activacion valido.";
+    return;
+  }
+  msg.style.color = "#334155";
+  msg.textContent = "Validando licencia en servidor...";
+  try{
+    const payload = new URLSearchParams({
+      action: "activate_license",
+      codigo: code,
+      plan_meses: String(months),
+      empresa: decodeEmpresa_(localStorage.getItem("empresa") || "FarmaPOS") || "FarmaPOS",
+      usuario: localStorage.getItem("usuario") || ""
+    });
+    const res = await fetch(`${API_URL}?${payload.toString()}`, {cache:"no-store"});
+    const data = await res.json();
+    if(!res.ok || !data || data.ok === false){
+      throw new Error((data && data.error) || "No se pudo activar la licencia.");
+    }
+
+    const lic = data.license || {};
+    localStorage.setItem("licencia_plan", String(lic.plan || `${months} meses`));
+    localStorage.setItem("licencia_estado", "activa");
+    localStorage.setItem("licencia_fin", String(lic.end || ""));
+    localStorage.setItem("licencia_dias", String(lic.days || ""));
+    msg.style.color = "#166534";
+    msg.textContent = "Licencia valida y activada correctamente.";
+    renderState();
+  }catch(e){
+    msg.style.color = "#b91c1c";
+    msg.textContent = e && e.message ? e.message : "Error validando licencia.";
+  }
+}
+
+renderState();
+
+function toggleSidebar(forceOpen){
+  const layout=document.querySelector(".layout");
+  if(!layout) return;
+  if(typeof forceOpen === "boolean") layout.classList.toggle("sidebar-open", forceOpen);
+  else layout.classList.toggle("sidebar-open");
+}
+window.addEventListener("resize",()=>{ if(window.innerWidth>860) toggleSidebar(false); });
+document.querySelectorAll(".menu a").forEach(a=>a.addEventListener("click",()=>{ if(window.innerWidth<=860) toggleSidebar(false); }));
+</script>
+</body>
+</html>
+
