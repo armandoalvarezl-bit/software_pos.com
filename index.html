@@ -1,1067 +1,237 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FarmaPOS Cloud</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<title>Lanzamiento | FarmaPOS Cloud</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-<link rel="icon" type="image/png" href="favicon.png">
-
 <style>
-:root{
---bg:#156a5f;
---bg-2:#0f5b52;
---card:#f8fbff;
---ink:#0b1220;
---muted:#64748b;
---line:#d7e0eb;
---brand:#0aa28a;
---brand-2:#07816f;
---focus:rgba(10,162,138,.24);
---shadow:0 26px 70px rgba(2,6,23,.28);
-}
-
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
-html,body{height:100%;}
-
-body{
-min-height:100vh;
-margin:0;
-display:grid;
-place-items:center;
-padding:22px 18px;
-background:
-radial-gradient(1000px 560px at 12% 18%, rgba(34,211,153,.22) 0%, transparent 54%),
-radial-gradient(860px 520px at 92% 10%, rgba(45,212,191,.22) 0%, transparent 56%),
-linear-gradient(135deg, var(--bg) 0%, var(--bg-2) 100%);
-color:var(--ink);
-line-height:1.35;
-overflow-x:hidden;
-overflow-y:auto;
-}
-
-.stage{
-position:fixed;
-inset:0;
-z-index:0;
-pointer-events:none;
-overflow:hidden;
-}
-
-.stage::before{
-content:'';
-position:absolute;
-inset:-20%;
-background:
-radial-gradient(circle at 22% 18%, rgba(255,255,255,.12) 0%, transparent 38%),
-radial-gradient(circle at 84% 14%, rgba(255,255,255,.10) 0%, transparent 34%),
-radial-gradient(circle at 82% 86%, rgba(255,255,255,.10) 0%, transparent 36%),
-linear-gradient(180deg, rgba(2,6,23,.10) 0%, rgba(2,6,23,0) 55%, rgba(2,6,23,.18) 100%);
-}
-
-.decor{position:absolute;filter:drop-shadow(0 22px 24px rgba(2,6,23,.35));opacity:.98;transform-origin:center;}
-
-.decor-tablet{
-right:54px;
-top:40px;
-width:320px;
-height:240px;
-transform:rotate(11deg);
-border-radius:30px;
-background:linear-gradient(135deg,#111827,#0b1220);
-box-shadow:inset 0 0 0 2px rgba(255,255,255,.08);
-}
-
-.decor-tablet::before{
-content:'';
-position:absolute;
-inset:18px;
-border-radius:20px;
-background:
-linear-gradient(90deg, rgba(10,162,138,.88) 0 0) 18px 18px/160px 16px no-repeat,
-linear-gradient(90deg, rgba(148,163,184,.55) 0 0) 18px 44px/252px 10px no-repeat,
-linear-gradient(90deg, rgba(148,163,184,.50) 0 0) 18px 62px/220px 10px no-repeat,
-linear-gradient(90deg, rgba(148,163,184,.45) 0 0) 18px 80px/190px 10px no-repeat,
-linear-gradient(135deg,#f1f5f9,#e2e8f0);
-}
-
-.decor-tablet::after{
-content:'';
-position:absolute;
-left:36px;
-right:36px;
-bottom:32px;
-height:76px;
-border-radius:18px;
-background:
-linear-gradient(#ffffff,#ffffff) 0 0/100% 100% no-repeat,
-linear-gradient(90deg, rgba(14,165,233,.55) 0 0) 18px 18px/64px 10px no-repeat,
-linear-gradient(90deg, rgba(34,197,94,.55) 0 0) 98px 18px/64px 10px no-repeat,
-linear-gradient(90deg, rgba(249,115,22,.55) 0 0) 178px 18px/64px 10px no-repeat;
-box-shadow:inset 0 0 0 1px rgba(203,213,225,.85);
-opacity:.96;
-}
-
-.decor-monitor{
-right:84px;
-bottom:34px;
-width:400px;
-height:260px;
-transform:rotate(-4deg);
-border-radius:26px;
-background:linear-gradient(135deg,#0b1220,#111827);
-box-shadow:inset 0 0 0 2px rgba(255,255,255,.08);
-}
-
-.decor-monitor::before{
-content:'';
-position:absolute;
-inset:18px 18px 44px 18px;
-border-radius:18px;
-background:
-linear-gradient(90deg, rgba(10,162,138,.88) 0 0) 18px 18px/180px 16px no-repeat,
-linear-gradient(90deg, rgba(148,163,184,.55) 0 0) 18px 44px/290px 10px no-repeat,
-linear-gradient(90deg, rgba(148,163,184,.52) 0 0) 18px 62px/268px 10px no-repeat,
-linear-gradient(90deg, rgba(148,163,184,.48) 0 0) 18px 80px/210px 10px no-repeat,
-linear-gradient(90deg, rgba(34,197,94,.68) 0 0) 18px 116px/80px 34px no-repeat,
-linear-gradient(90deg, rgba(14,165,233,.62) 0 0) 106px 116px/80px 34px no-repeat,
-linear-gradient(90deg, rgba(249,115,22,.62) 0 0) 194px 116px/80px 34px no-repeat,
-linear-gradient(135deg,#f1f5f9,#e2e8f0);
-}
-
-.decor-monitor::after{
-content:'';
-position:absolute;
-left:50%;
-bottom:-18px;
-width:190px;
-height:44px;
-transform:translateX(-50%);
-border-radius:16px;
-background:linear-gradient(135deg,#334155,#475569);
-box-shadow:0 14px 18px rgba(2,6,23,.18);
-}
-
-.decor-phone{
-left:92px;
-bottom:24px;
-width:230px;
-height:300px;
-transform:rotate(-10deg);
-border-radius:32px;
-background:linear-gradient(135deg,#0f172a,#111827);
-box-shadow:inset 0 0 0 2px rgba(255,255,255,.08);
-}
-
-.decor-phone::before{
-content:'';
-position:absolute;
-inset:22px 18px 30px 18px;
-border-radius:22px;
-background:
-linear-gradient(90deg, rgba(10,162,138,.85) 0 0) 14px 16px/136px 14px no-repeat,
-linear-gradient(90deg, rgba(34,197,94,.75) 0 0) 14px 38px/136px 14px no-repeat,
-linear-gradient(90deg, rgba(249,115,22,.75) 0 0) 14px 60px/136px 14px no-repeat,
-linear-gradient(90deg, rgba(239,68,68,.72) 0 0) 14px 82px/136px 14px no-repeat,
-linear-gradient(90deg, rgba(14,165,233,.70) 0 0) 14px 104px/136px 14px no-repeat,
-linear-gradient(135deg,#f1f5f9,#e2e8f0);
-}
-
-.decor-phone::after{
-content:'';
-position:absolute;
-left:50%;
-top:14px;
-width:88px;
-height:7px;
-transform:translateX(-50%);
-border-radius:999px;
-background:rgba(148,163,184,.55);
-}
-
-.decor-printer{
-left:44px;
-top:300px;
-width:240px;
-height:180px;
-transform:rotate(-3deg);
-border-radius:18px;
-background:linear-gradient(135deg,#f8fafc,#cbd5e1);
-box-shadow:inset 0 0 0 2px rgba(100,116,139,.24);
-}
-
-.decor-printer::before{
-content:'';
-position:absolute;
-left:18px;
-right:18px;
-top:18px;
-height:58px;
-border-radius:14px;
-background:rgba(14,165,233,.18);
-}
-
-.decor-printer::after{
-content:'';
-position:absolute;
-left:48px;
-right:48px;
-bottom:18px;
-height:80px;
-border-radius:12px;
-background:
-linear-gradient(90deg, rgba(148,163,184,.85) 0 0) 16px 18px/128px 6px no-repeat,
-linear-gradient(90deg, rgba(148,163,184,.85) 0 0) 16px 34px/98px 6px no-repeat,
-linear-gradient(90deg, rgba(148,163,184,.85) 0 0) 16px 50px/114px 6px no-repeat,
-linear-gradient(#ffffff,#ffffff);
-box-shadow:inset 0 0 0 2px rgba(203,213,225,.75);
-}
-
-.layout{
-position:relative;
-z-index:2;
-width:min(560px, 100%);
-}
-
-.login-features{
-margin:8px 0 10px;
-display:grid;
-gap:7px;
-padding:10px 10px;
-border-radius:12px;
-border:1px solid rgba(10,162,138,.18);
-background:rgba(10,162,138,.06);
-}
-
-.login-features-title{
-font-size:11px;
-font-weight:900;
-letter-spacing:.12em;
-text-transform:uppercase;
-color:var(--brand-2);
-}
-
-.feature{
-display:flex;
-gap:10px;
-align-items:flex-start;
-color:#0f172a;
-font-size:12.5px;
-line-height:1.35;
-}
-
-.feature .dot{
-flex:0 0 auto;
-width:10px;
-height:10px;
-border-radius:999px;
-margin-top:4px;
-background:linear-gradient(135deg, rgba(34,197,94,.95), rgba(45,212,191,.95));
-box-shadow:0 0 0 4px var(--focus);
-}
-
-.login-wrap{position:relative;width:100%;}.login-card{
-background:var(--card);
-border:1px solid rgba(226,232,240,.95);
-border-radius:18px;
-box-shadow:var(--shadow);
-padding:22px 22px 16px;
-}
-
-.brand{text-align:center;padding:6px 0 10px;}
-.brand-logo{display:block;margin:0 auto 6px;width:160px;height:auto;}
-.brand-sub{margin-top:4px;font-size:12.5px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#0b1220;opacity:.92;}
-
-.welcome{text-align:center;font-size:12.5px;color:#0f172a;margin:4px 0 10px;}
-.welcome strong{color:var(--brand-2);}
-
-.empresa-panel{background:#9ca3af;border-radius:8px;padding:10px;margin-bottom:12px;}
-.empresa-label{display:block;font-size:12px;font-weight:700;color:#ffffff;margin-bottom:8px;}
-
-.field{margin-bottom:10px;}
-.field label{display:block;font-size:12px;font-weight:600;color:#64748b;margin:0 0 5px 2px;}
-
-.password-wrap{position:relative;}
-
-input{
-width:100%;
-padding:10px 10px;
-border-radius:9px;
-border:1px solid #c6d3e0;
-font-size:12.5px;
-outline:none;
-transition:border-color .2s, box-shadow .2s, background .2s;
-background:#f8fbff;
-color:#0f172a;
-}
-
-input::placeholder{color:#7b8ba0;}
-
-input:focus{
-border-color:var(--brand);
-background:#fff;
-box-shadow:0 0 0 4px var(--focus);
-}
-
-.toggle-pass{
-position:absolute;
-right:8px;
-top:50%;
-transform:translateY(-50%);
-border:none;
-background:transparent;
-color:#31465e;
-font-size:11px;
-font-weight:700;
-letter-spacing:.25px;
-cursor:pointer;
-padding:6px 8px;
-border-radius:7px;
-box-shadow:none;
-width:auto;
-display:none;
-}
-
-.toggle-pass:hover{background:#edf3f8;transform:translateY(-50%);}
-
-.check-row{margin:8px 0 10px;}
-.check{display:flex;align-items:center;gap:10px;font-size:12px;color:#0f172a;user-select:none;}
-.check input{width:16px;height:16px;padding:0;border-radius:4px;}
-
-#btnLogin{
-width:100%;
-padding:12px;
-background:linear-gradient(135deg,var(--brand),var(--brand-2));
-border:none;
-border-radius:9px;
-color:#fff;
-font-weight:700;
-font-size:12.5px;
-letter-spacing:.3px;
-cursor:pointer;
-transition:transform .15s, box-shadow .2s, filter .2s;
-margin-top:6px;
-display:flex;
-justify-content:center;
-align-items:center;
-box-shadow:0 10px 20px rgba(6,95,70,.28);
-}
-
-#btnLogin:hover{filter:brightness(1.03);transform:translateY(-1px);}
-#btnLogin.loading{opacity:.72;pointer-events:none;}
-
-.spinner{
-width:16px;
-height:16px;
-border:2px solid rgba(255,255,255,0.35);
-border-top:2px solid white;
-border-radius:50%;
-animation:spin 1s linear infinite;
-margin-left:8px;
-display:none;
-}
-
-@keyframes spin{to{transform:rotate(360deg);}}
-
-.message{margin-top:9px;font-size:12px;display:none;}
-.error{color:#dc2626;}
-.success{color:#15803d;}
-.domain-preview{font-size:11px;color:#64748b;margin-top:4px;padding-left:1px;}
-.caps-warning{font-size:11px;color:#b45309;display:none;margin-top:4px;}
-
-.terms-box{
-display:flex;
-gap:10px;
-align-items:flex-start;
-background:#e7f7f0;
-border:1px solid rgba(10,162,138,.25);
-border-radius:9px;
-padding:10px 10px;
-font-size:12px;
-color:#0f172a;
-margin-top:6px;
-}
-
-.terms-box input{width:16px;height:16px;margin-top:2px;}
-.terms-box a{color:var(--brand-2);font-weight:700;text-decoration:none;}
-.terms-box a:hover{text-decoration:underline;}
-
-.forgot{margin-top:10px;display:flex;justify-content:center;}
-.forgot a{
-text-decoration:none;
-display:inline-flex;
-align-items:center;
-justify-content:center;
-padding:7px 12px;
-border-radius:999px;
-border:2px solid rgba(10,162,138,.55);
-color:var(--brand-2);
-font-weight:800;
-font-size:12px;
-transition:background .2s ease, transform .15s ease;
-}
-
-.forgot a:hover{background:rgba(10,162,138,.10);transform:translateY(-1px);}
-
-.support{
-margin-top:10px;
-background:#f3f4f6;
-border:1px solid #e5e7eb;
-border-radius:9px;
-padding:10px 10px;
-text-align:center;
-font-size:12px;
-color:#334155;
-}
-
-.support strong{color:#f97316;}
-
-.support-phone{
-margin-top:6px;
-display:inline-flex;
-align-items:center;
-justify-content:center;
-gap:7px;
-padding:7px 12px;
-border-radius:999px;
-border:1px solid rgba(10,162,138,.35);
-background:#ffffff;
-color:var(--brand-2);
-font-weight:800;
-text-decoration:none;
-}
-
-.footer{margin-top:10px;font-size:11px;color:#64748b;text-align:center;}
-
-.app-loading{
-position:fixed;
-inset:0;
-display:none;
-align-items:center;
-justify-content:center;
-z-index:9999;
-background:
-radial-gradient(900px 520px at 15% 20%, rgba(45,212,191,.22) 0%, transparent 60%),
-radial-gradient(820px 520px at 88% 80%, rgba(34,211,153,.18) 0%, transparent 62%),
-linear-gradient(180deg, rgba(2,6,23,.62), rgba(2,6,23,.72));
-backdrop-filter:blur(5px);
-}
-
-.app-loading.active{
-display:flex;
-animation:fadeIn .18s ease-out;
-}
-
-@keyframes fadeIn{
-from{opacity:0;}
-to{opacity:1;}
-}
-
-.app-loading-card{
-width:min(380px, calc(100vw - 40px));
-background:rgba(248,251,255,.92);
-border:1px solid rgba(226,232,240,.95);
-border-radius:18px;
-padding:18px 16px 16px;
-text-align:center;
-box-shadow:0 26px 60px rgba(2,6,23,.35);
-position:relative;
-overflow:hidden;
-}
-
-.app-loading-card::before{
-content:'';
-position:absolute;
-left:-30%;
-top:-40%;
-width:160%;
-height:180%;
-background:
-radial-gradient(circle at 30% 30%, rgba(10,162,138,.22) 0%, transparent 55%),
-radial-gradient(circle at 70% 65%, rgba(34,197,94,.18) 0%, transparent 58%);
-opacity:.9;
-pointer-events:none;
-}
-
-.loading-logo{
-position:relative;
-width:60px;
-height:60px;
-object-fit:contain;
-margin:2px auto 10px;
-padding:10px;
-border-radius:999px;
-background:rgba(255,255,255,.92);
-border:1px solid rgba(226,232,240,.95);
-box-shadow:0 14px 22px rgba(2,6,23,.14);
-}
-.app-loading-title{
-position:relative;
-font-size:14px;
-font-weight:800;
-color:#064e3b;
-margin-bottom:4px;
-}
-
-.loading-hint{
-position:relative;
-font-size:12px;
-color:#64748b;
-margin-bottom:12px;
-}
-
-.loading-progress{
-position:relative;
-height:10px;
-border-radius:999px;
-background:rgba(148,163,184,.22);
-border:1px solid rgba(148,163,184,.25);
-overflow:hidden;
-}
-
-.loading-progress span{
-position:absolute;
-inset:0;
-width:45%;
-border-radius:999px;
-background:linear-gradient(90deg, rgba(10,162,138,.85), rgba(34,197,94,.85));
-box-shadow:0 10px 18px rgba(6,95,70,.22);
-animation:barMove 1.1s ease-in-out infinite;
-}
-
-@keyframes barMove{
-0%{transform:translateX(-60%);opacity:.75;}
-50%{transform:translateX(80%);opacity:1;}
-100%{transform:translateX(210%);opacity:.75;}
-}
-
-.dots{
-position:relative;
-display:flex;
-justify-content:center;
-gap:6px;
-margin-top:10px;
-}
-
-.dots span{
-width:7px;
-height:7px;
-border-radius:999px;
-background:#10b981;
-animation:bounce 1s infinite ease-in-out;
-}
-
-.dots span:nth-child(2){animation-delay:.15s;}
-.dots span:nth-child(3){animation-delay:.3s;}
-
-@keyframes bounce{
-0%,80%,100%{transform:scale(.65);opacity:.55;}
-40%{transform:scale(1);opacity:1;}
-}40%{transform:scale(1);opacity:1;}
-}
-
-.toast{
-position:fixed;
-top:18px;
-right:18px;
-z-index:12050;
-min-width:260px;
-max-width:360px;
-padding:12px 14px;
-border-radius:12px;
-border:1px solid #bbf7d0;
-background:#ecfdf5;
-color:#14532d;
-box-shadow:0 14px 28px rgba(2,6,23,.20);
-font-size:12.5px;
-font-weight:600;
-opacity:0;
-transform:translateY(-8px);
-pointer-events:none;
-transition:opacity .22s ease, transform .22s ease;
-}
-
-.toast.show{opacity:1;transform:translateY(0);}
-
-.modal{
-position:fixed;
-inset:0;
-background:rgba(2,6,23,.55);
-display:none;
-align-items:center;
-justify-content:center;
-z-index:10001;
-padding:16px;
-}
-
-.modal.active{display:flex;}
-
-.modal-card{
-width:100%;
-max-width:390px;
-background:#fff;
-border:1px solid #e2e8f0;
-border-radius:14px;
-padding:16px;
-box-shadow:0 20px 45px rgba(15,23,42,.35);
-}
-
-.modal-title{font-size:.95rem;font-weight:700;color:#065f46;margin-bottom:6px;}
-.modal-sub{font-size:.8rem;color:#64748b;margin-bottom:10px;}
-
-.modal-actions{display:flex;gap:7px;margin-top:10px;}
-
-.modal-actions button,.btn-ghost{width:100%;padding:10px;border-radius:9px;font-weight:600;cursor:pointer;}
-
-.modal-actions button{background:linear-gradient(135deg,var(--brand),var(--brand-2));border:none;color:#fff;}
-
-.btn-ghost{border:1px solid #d1d5db;background:#fff;color:#334155;}
-
-@media(max-width:900px){
-body{padding:18px;}
-.decor{display:none;}
-.layout{max-width:520px;}
-.login-card{padding:22px 18px 16px;}
-.brand-logo{width:160px;}
-}
+:root{--bg:#0b1220;--bg2:#13213a;--bg3:#1e3a6d;--panel:rgba(255,255,255,.08);--line:rgba(255,255,255,.14);--text:#f8fafc;--muted:#dbe4f0;--brand:#f97316;--brand2:#eab308;--ink:#0f172a;--shadow:0 32px 80px rgba(2,6,23,.33);--shadow-soft:0 18px 42px rgba(2,6,23,.18)}
+*{font-family:"Poppins",sans-serif}html{scroll-behavior:smooth}body{min-height:100vh;color:var(--text);background:radial-gradient(860px 520px at 0% 0%,rgba(249,115,22,.24),transparent 56%),radial-gradient(720px 420px at 100% 8%,rgba(234,179,8,.18),transparent 54%),linear-gradient(180deg,var(--bg3),var(--bg2) 42%,var(--bg) 100%);overflow-x:hidden}a{text-decoration:none;color:inherit}.bg-stage{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}.blob,.ring,.grid-fade,.line-glow{position:absolute}.blob{border-radius:50%;filter:blur(10px);opacity:.5}.blob.one{width:360px;height:360px;background:radial-gradient(circle,rgba(249,115,22,.42),transparent 68%);top:70px;left:-90px}.blob.two{width:460px;height:460px;background:radial-gradient(circle,rgba(239,68,68,.20),transparent 70%);right:-110px;top:220px}.ring{width:360px;height:360px;border-radius:50%;border:1px solid rgba(255,255,255,.08);right:7%;top:110px;box-shadow:0 0 0 32px rgba(255,255,255,.02),0 0 0 64px rgba(255,255,255,.015)}.grid-fade{width:560px;height:560px;left:0;bottom:40px;background:linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);background-size:22px 22px;mask-image:radial-gradient(circle,rgba(0,0,0,1) 34%,transparent 72%);opacity:.16}.line-glow{left:0;right:0;top:520px;height:1px;background:linear-gradient(90deg,transparent,rgba(234,179,8,.38),transparent)}.site-wrap{position:relative;z-index:1}.topbar{padding:22px 0}.brand-shell{display:flex;align-items:center;gap:12px}.brand-mark{width:54px;height:54px;display:grid;place-items:center;border-radius:16px;background:linear-gradient(135deg,var(--brand),var(--brand2));border:1px solid rgba(255,255,255,.16);color:#fff;font-weight:800;font-size:1.1rem;box-shadow:0 10px 24px rgba(249,115,22,.26)}.brand-shell .small-note{font-size:.76rem;letter-spacing:.14em;text-transform:uppercase;color:#f59e0b}.nav-pill{display:flex;flex-wrap:wrap;gap:10px;justify-content:end}.nav-pill a{padding:10px 15px;border-radius:999px;color:#f8fafc;font-size:.92rem;transition:.2s ease}.nav-pill a:hover{background:rgba(255,255,255,.08)}.hero{padding:34px 0 18px}.eyebrow{display:inline-flex;align-items:center;gap:10px;padding:9px 14px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid var(--line);font-size:.76rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase}.eyebrow i{color:#f59e0b}.hero h1{margin-top:18px;font-size:clamp(3rem,6vw,5.4rem);line-height:.92;letter-spacing:-.06em;max-width:9.2ch}.hero h1 span{color:#f59e0b}.hero .lead{margin-top:18px;max-width:650px;color:#dbeafe;font-size:1.02rem;line-height:1.9}.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}.btn-brand{background:linear-gradient(135deg,var(--brand),var(--brand2));border:none;color:#fff;padding:14px 20px;border-radius:16px;font-weight:700;box-shadow:0 16px 36px rgba(249,115,22,.28)}.btn-glass{padding:14px 20px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.06);color:#ecfeff;font-weight:700}.hero-checks{display:grid;gap:12px;margin-top:28px}.hero-checks .item{display:flex;gap:12px;align-items:flex-start;color:#dbeafe;line-height:1.7}.hero-checks i{color:#f59e0b;margin-top:3px}.hero-microstats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:28px}.microstat{padding:16px 14px;border-radius:20px;background:rgba(255,255,255,.07);border:1px solid var(--line)}.microstat strong{display:block;font-size:1.1rem;letter-spacing:-.03em}.microstat span{display:block;margin-top:4px;color:#cbd5e1;font-size:.82rem;line-height:1.5}.float-panel{position:relative;padding:24px;border-radius:32px;background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.08));border:1px solid rgba(255,255,255,.14);box-shadow:var(--shadow);overflow:hidden}.mini-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:rgba(249,115,22,.18);font-size:.8rem}.pricing-core{margin-top:18px;padding:22px;border-radius:26px;background:linear-gradient(180deg,#fff7ed,#fffbeb);color:var(--ink);box-shadow:var(--shadow-soft)}.pricing-core .kicker{font-size:.78rem;color:#64748b;letter-spacing:.12em;text-transform:uppercase;font-weight:700}.pricing-core .amount{font-size:2.2rem;font-weight:800;letter-spacing:-.06em;margin-top:6px}.pricing-core .amount span{font-size:1rem;color:#64748b;font-weight:600}.pricing-core p{margin-top:10px;color:#334155;line-height:1.8}.mini-rows{display:grid;gap:10px;margin-top:18px}.mini-rows .row-item{display:flex;justify-content:space-between;gap:12px;padding:12px 14px;border-radius:16px;background:rgba(15,23,42,.04);font-size:.9rem}.mini-rows .row-item strong{color:#9a3412}.side-note{margin-top:16px;padding:14px 16px;border-radius:18px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#dbeafe;line-height:1.7;font-size:.9rem}.trust-strip{padding:10px 0 28px}.trust-card{padding:18px 20px;border-radius:24px;background:rgba(255,255,255,.06);border:1px solid var(--line)}.trust-card .label{font-size:.76rem;letter-spacing:.14em;text-transform:uppercase;color:#f59e0b;font-weight:700}.trust-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:14px}.trust-item{padding:16px;border-radius:18px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08)}.trust-item strong{display:block;font-size:1.1rem}.trust-item span{display:block;color:#cbd5e1;font-size:.82rem;margin-top:4px;line-height:1.5}.section-block{padding:34px 0}.section-head{margin-bottom:22px}.section-head .pre{display:inline-block;font-size:.8rem;color:#f59e0b;letter-spacing:.14em;text-transform:uppercase;font-weight:700;margin-bottom:8px}.section-head h2{font-size:clamp(1.85rem,2.2vw,2.7rem);letter-spacing:-.05em}.section-head p{margin-top:10px;max-width:720px;color:var(--muted);line-height:1.9}.feature-card,.plan-card,.req-card,.cta-card,.compare-card,.faq-card{height:100%;padding:24px;border-radius:28px;background:var(--panel);border:1px solid var(--line);box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}.icon-chip{width:48px;height:48px;border-radius:16px;display:grid;place-items:center;background:rgba(255,255,255,.14);color:#f59e0b;font-size:1.15rem;margin-bottom:16px}.feature-card h3,.plan-card h3,.req-card h3,.faq-card h3{font-size:1.06rem;margin-bottom:8px}.feature-card p,.plan-card p,.req-card p,.req-card li,.plan-card li,.faq-card p{color:#dbeafe;line-height:1.8;font-size:.92rem}.plan-card ul,.req-card ul{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:8px}.plan-card li,.req-card li{position:relative;padding-left:18px}.plan-card li:before,.req-card li:before{content:"";position:absolute;left:0;top:11px;width:8px;height:8px;border-radius:50%;background:#eab308}.plan-card.featured{background:linear-gradient(180deg,rgba(249,115,22,.18),rgba(255,255,255,.08));border-color:rgba(234,179,8,.32)}.plan-price{font-size:2rem;font-weight:800;letter-spacing:-.05em;margin:10px 0 2px}.plan-price span{font-size:.9rem;color:#cbd5e1;font-weight:600}.plan-badge{display:inline-block;padding:7px 10px;border-radius:999px;background:rgba(249,115,22,.16);border:1px solid rgba(234,179,8,.28);font-size:.74rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#fde68a}.req-card{background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,.07))}.compare-card{padding:0;overflow:hidden}.compare-head{padding:22px 22px 8px}.compare-table{width:100%;border-collapse:collapse}.compare-table th,.compare-table td{padding:16px 18px;border-top:1px solid rgba(255,255,255,.08);font-size:.9rem}.compare-table th{color:#f59e0b;font-size:.76rem;letter-spacing:.14em;text-transform:uppercase}.compare-table td{color:#f8fafc}.compare-table tr:nth-child(even) td{background:rgba(255,255,255,.03)}.compare-table td.center{text-align:center;font-weight:700}.cta-card{padding:30px;background:linear-gradient(135deg,rgba(255,255,255,.16),rgba(255,255,255,.08));box-shadow:var(--shadow)}.cta-card h2{font-size:clamp(2rem,3vw,2.9rem);letter-spacing:-.05em}.cta-card p{margin-top:12px;color:#dbeafe;line-height:1.9;font-size:.98rem}.cta-list{display:grid;gap:10px;margin-top:18px}.cta-list .item{display:flex;gap:10px;align-items:flex-start;color:#ecfeff}.cta-list i{color:#f59e0b;margin-top:3px}.faq-card{background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.06))}.faq-card p{margin-bottom:0}.footer-note{padding:28px 0 38px;text-align:center;color:#94a3b8;font-size:.82rem}@media (max-width:991.98px){.hero h1{max-width:100%}.nav-pill{justify-content:start;margin-top:12px}.topbar .col-lg-6:last-child{display:none}.hero-microstats,.trust-grid{grid-template-columns:repeat(2,1fr)}}@media (max-width:575.98px){.hero-microstats,.trust-grid{grid-template-columns:1fr}.compare-table th,.compare-table td{padding:12px 10px;font-size:.82rem}}
 </style>
 </head>
-
 <body>
+<div class="bg-stage"><div class="blob one"></div><div class="blob two"></div><div class="ring"></div><div class="grid-fade"></div><div class="line-glow"></div></div>
+<div class="site-wrap">
+<div class="container py-1">
+  <div class="row align-items-center topbar">
+    <div class="col-lg-6">
+      <a class="brand-shell" href="#inicio">
+        <div class="brand-mark" aria-hidden="true">FP</div>
+        <div>
+          <div class="fw-bold fs-5">FarmaPOS Cloud</div>
+          <div class="small-note">Presentacion comercial</div>
+        </div>
+      </a>
+    </div>
+    <div class="col-lg-6">
+      <nav class="nav-pill">
+        <a href="#beneficios">Beneficios</a>
+        <a href="#precios">Cotizacion</a>
+        <a href="#requisitos">Requisitos</a>
+        <a href="#faq">FAQ</a>
+        <a href="#contacto">Contacto</a>
+      </nav>
+    </div>
+  </div>
 
-<div class="stage" aria-hidden="true">
-  <div class="decor decor-tablet"></div>
-  <div class="decor decor-monitor"></div>
-  <div class="decor decor-phone"></div>
-  <div class="decor decor-printer"></div>
-</div>
-
-<div class="layout">
-  <main class="login-wrap">
-    <section class="login-card">
-      <div class="brand">
-        <img src="image/Logo.png" class="brand-logo" alt="FarmaPOS">
-        <div class="brand-sub">Sistema de Facturacion</div>
+  <section class="hero" id="inicio">
+    <div class="row align-items-center g-4 g-lg-5">
+      <div class="col-lg-7">
+        <div class="eyebrow"><i class="bi bi-stars"></i> Presentacion comercial</div>
+        <h1>FarmaPOS Cloud <span>plataforma de gestion farmaceutica en la nube.</span></h1>
+        <p class="lead">FarmaPOS Cloud es una solucion disenada para optimizar la gestion operativa de farmacias mediante una plataforma centralizada, accesible y adaptable a diferentes entornos de trabajo.</p>
+        <p class="lead">Esta pagina presenta una vision general de la propuesta comercial, enfocada en facilitar la comprension del servicio, sus beneficios y su estructura operativa.</p>
+        <div class="hero-actions">
+          <a class="btn btn-brand" href="#precios"><i class="bi bi-file-earmark-text"></i> Ver estructura</a>
+          <a class="btn btn-glass" href="#contacto"><i class="bi bi-chat-dots"></i> Contacto comercial</a>
+        </div>
+        <div class="hero-checks">
+          <div class="item"><i class="bi bi-check2-circle"></i><span>Informacion clara y sin promesas no confirmadas.</span></div>
+          <div class="item"><i class="bi bi-check2-circle"></i><span>Condiciones sujetas a validacion tecnica y operativa.</span></div>
+          <div class="item"><i class="bi bi-check2-circle"></i><span>Estructura preparada para cotizacion personalizada.</span></div>
+        </div>
+        <div class="hero-microstats">
+          <div class="microstat"><strong>Cotizacion</strong><span>Definida segun necesidades reales del negocio.</span></div>
+          <div class="microstat"><strong>Validacion</strong><span>Tecnica y operativa antes de implementacion.</span></div>
+          <div class="microstat"><strong>Presentacion</strong><span>Orientada a toma de decisiones comerciales.</span></div>
+        </div>
       </div>
-
-    <div class="welcome"><strong>BIENVENIDO</strong> Por favor inicia con tu cuenta de usuario.</div>
-
-    <div class="login-features" role="list" aria-label="Caracteristicas">
-      <div class="login-features-title">Todo en un solo lugar</div>
-      <div class="feature" role="listitem"><span class="dot" aria-hidden="true"></span><div>Ventas rapidas, turnos y control de caja.</div></div>
-      <div class="feature" role="listitem"><span class="dot" aria-hidden="true"></span><div>Inventario con alertas por stock critico y vencimientos.</div></div>
-      <div class="feature" role="listitem"><span class="dot" aria-hidden="true"></span><div>Reportes claros para decisiones diarias.</div></div>
-    </div>
-
-    <div class="empresa-panel">
-      <label class="empresa-label" for="empresa">Empresa (Usuario principal)</label>
-      <input type="text" id="empresa" placeholder="Empresa / Dominio" autocomplete="organization">
-      <div class="domain-preview" id="preview"></div>
-    </div>
-
-    <div class="field">
-      <label for="usuario">Usuario</label>
-      <input type="text" id="usuario" placeholder="Usuario" autocomplete="username">
-    </div>
-
-    <div class="field">
-      <label for="clave">Contraseña</label>
-      <div class="password-wrap">
-        <input type="password" id="clave" placeholder="Contraseña" autocomplete="current-password">
-        <button type="button" class="toggle-pass" id="togglePass">VER</button>
-      </div>
-      <div class="caps-warning" id="capsWarning">Caps Lock está activado.</div>
-    </div>
-
-    <div class="check-row">
-      <label class="check">
-        <input type="checkbox" id="showPass">
-        <span>Mostrar Contraseña</span>
-      </label>
-    </div>
-
-    <div class="terms-box">
-      <input type="checkbox" id="acceptTerms">
-      <div>
-        Al continuar, confirmas que has leído y aceptas nuestros <a href="#">Términos y condiciones</a> y <a href="#">Política de Tratamiento de Datos</a>.
-      </div>
-    </div>
-
-    <button id="btnLogin" type="button" onclick="login()">
-      INICIAR SESIÓN
-      <div class="spinner" id="spinner"></div>
-    </button>
-
-    <div class="message error" id="errorMsg"></div>
-    <div class="message success" id="successMsg"></div>
-
-    <div class="forgot">
-      <a href="#" id="linkRecover">¿Has olvidado tu contraseña?</a>
-    </div>
-
-    <div class="support">
-      <strong>¿Tienes problemas para ingresar?</strong> Estamos aquí para ayudarte. Contáctanos a nuestra línea de soporte.
-      <div>
-        <a class="support-phone" href="tel:+573132181035">+57 (313) 218 1035</a>
+      <div class="col-lg-5">
+        <aside class="float-panel" id="precios">
+          <div class="d-flex justify-content-between align-items-start gap-3">
+            <div>
+              <div class="text-uppercase fw-bold" style="font-size:.78rem;letter-spacing:.14em;color:#f59e0b">Importante</div>
+              <h2 class="h3 mt-2 mb-0">Condiciones sujetas a validacion</h2>
+            </div>
+            <div class="mini-badge"><i class="bi bi-info-circle-fill"></i> Cotizacion formal</div>
+          </div>
+          <div class="pricing-core">
+            <div class="kicker">Cotizacion</div>
+            <div class="amount">$89.900 <span>/ mes</span></div>
+            <p>El valor mensual de referencia es de $89.900. El valor final puede variar segun numero de usuarios, cantidad de sedes, nivel de implementacion requerido, necesidades operativas especificas y alcance del soporte.</p>
+            <div class="mini-rows">
+              <div class="row-item"><span>Implementacion</span><strong>Segun operacion</strong></div>
+              <div class="row-item"><span>Valor mensual</span><strong>$89.900</strong></div>
+              <div class="row-item"><span>Soporte</span><strong>Segun acuerdo</strong></div>
+            </div>
+          </div>
+          <div class="side-note">Los valores, condiciones y alcance del servicio estan sujetos a validacion previa y deben confirmarse mediante una cotizacion formal basada en las necesidades reales del negocio.</div>
+        </aside>
       </div>
     </div>
-
-    <div class="footer">&copy; 2026 FarmaPOS Cloud</div>
   </section>
-</main>
-</div>
 
-<div class="app-loading" id="appLoading">
-  <div class="app-loading-card" role="status" aria-live="polite" aria-busy="true">
-    <img class="loading-logo" src="image/Logo.png" alt="FarmaPOS">
-    <div class="app-loading-title" id="appLoadingText">Validando acceso...</div>
-    <div class="loading-hint">Procesando de forma segura. No cierres esta ventana.</div>
-    <div class="loading-progress" aria-hidden="true"><span></span></div>
-    <div class="dots" aria-hidden="true"><span></span><span></span><span></span></div>
-  </div>
-</div>
-
-<div class="toast" id="toastMsg"></div>
-
-<div class="modal" id="recoverModal">
-  <div class="modal-card">
-    <div class="modal-title">Recuperar contrasena</div>
-    <div class="modal-sub">Ingresa tu usuario para generar una clave temporal.</div>
-
-    <div class="field">
-      <label for="recoverEmpresa">Empresa / Dominio (opcional)</label>
-      <input type="text" id="recoverEmpresa" placeholder="Empresa / Dominio (opcional)">
+  <section class="trust-strip">
+    <div class="trust-card">
+      <div class="label">Estructura del servicio</div>
+      <div class="trust-grid">
+        <div class="trust-item"><strong>Implementacion</strong><span>Configuracion segun operacion, parametrizacion inicial y validacion previa.</span></div>
+        <div class="trust-item"><strong>Licenciamiento</strong><span>Definido segun modelo comercial acordado y propuesta formal.</span></div>
+        <div class="trust-item"><strong>Soporte</strong><span>Nivel de soporte definido por acuerdo comercial.</span></div>
+        <div class="trust-item"><strong>Presentacion</strong><span>Vision general del servicio, sus beneficios y estructura operativa.</span></div>
+      </div>
     </div>
-
-    <div class="field">
-      <label for="recoverUsuario">Usuario</label>
-      <input type="text" id="recoverUsuario" placeholder="Usuario">
+  </section>
+  <section class="section-block" id="beneficios">
+    <div class="section-head text-center text-lg-start">
+      <div class="pre">Enfoque comercial</div>
+      <h2>Presentacion profesional orientada a toma de decisiones</h2>
+      <p>Esta propuesta esta construida bajo un enfoque transparente y verificable.</p>
     </div>
-
-    <div class="message error" id="recoverError"></div>
-    <div class="message success" id="recoverSuccess"></div>
-
-    <div class="modal-actions">
-      <button class="btn-ghost" type="button" onclick="closeRecoverModal()">Cancelar</button>
-      <button type="button" onclick="recoverPassword()">Generar clave temporal</button>
+    <div class="row g-4">
+      <div class="col-md-6 col-xl-3"><article class="feature-card"><div class="icon-chip"><i class="bi bi-shield-check"></i></div><h3>Enfoque responsable</h3><p>El contenido evita promesas no verificadas y presenta la informacion de forma clara y profesional.</p></article></div>
+      <div class="col-md-6 col-xl-3"><article class="feature-card"><div class="icon-chip"><i class="bi bi-palette2"></i></div><h3>Imagen comercial solida</h3><p>Diseno moderno orientado a generar confianza y mejorar la percepcion del servicio.</p></article></div>
+      <div class="col-md-6 col-xl-3"><article class="feature-card"><div class="icon-chip"><i class="bi bi-diagram-3"></i></div><h3>Mejor organizacion</h3><p>Estructura clara que facilita la comprension de condiciones, requisitos y alcance del servicio.</p></article></div>
+      <div class="col-md-6 col-xl-3"><article class="feature-card"><div class="icon-chip"><i class="bi bi-phone"></i></div><h3>Adaptabilidad</h3><p>Compatible con escritorio, tablet y movil.</p></article></div>
     </div>
-  </div>
+  </section>
+
+  <section class="section-block">
+    <div class="section-head text-center text-lg-start">
+      <div class="pre">Esquema comercial de referencia</div>
+      <h2>Categorias de referencia para cotizacion</h2>
+      <p>Los siguientes niveles son categorias de referencia y no representan precios finales.</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-lg-4"><article class="plan-card"><span class="plan-badge">Referencia</span><div class="icon-chip mt-3"><i class="bi bi-rocket-takeoff"></i></div><h3>Referencia Base</h3><p>Para configuraciones iniciales.</p><div class="plan-price">$89.900 <span>/ mes</span></div><ul><li>Alcance por definir</li><li>Implementacion segun proyecto</li><li>Condiciones segun validacion</li></ul></article></div>
+      <div class="col-lg-4"><article class="plan-card featured"><span class="plan-badge">Referencia</span><div class="icon-chip mt-3"><i class="bi bi-people"></i></div><h3>Referencia Multiusuario</h3><p>Para operaciones con mayor volumen.</p><div class="plan-price">Cotizacion <span>segun alcance</span></div><ul><li>Usuarios y sedes a validar</li><li>Soporte segun acuerdo</li><li>Implementacion segun proyecto</li></ul></article></div>
+      <div class="col-lg-4"><article class="plan-card"><span class="plan-badge">Referencia</span><div class="icon-chip mt-3"><i class="bi bi-buildings"></i></div><h3>Referencia Personalizada</h3><p>Para necesidades especificas o multiples sedes.</p><div class="plan-price">Cotizacion <span>personalizada</span></div><ul><li>Alcance definido en propuesta formal</li><li>Condiciones segun validacion</li><li>Implementacion segun proyecto</li></ul></article></div>
+    </div>
+  </section>
+
+  <section class="section-block">
+    <div class="compare-card">
+      <div class="compare-head">
+        <div class="section-head mb-0 text-center text-lg-start">
+          <div>
+            <div class="pre">Comparativa comercial</div>
+            <h2 class="mb-0">Comparativa comercial de referencia</h2>
+          </div>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Aspecto</th>
+              <th class="text-center">Base</th>
+              <th class="text-center">Multiusuario</th>
+              <th class="text-center">Personalizado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Licenciamiento</td>
+              <td class="center">Segun cotizacion</td>
+              <td class="center">Segun cotizacion</td>
+              <td class="center">Segun cotizacion</td>
+            </tr>
+            <tr>
+              <td>Usuarios/Sedes</td>
+              <td class="center">A validar</td>
+              <td class="center">A validar</td>
+              <td class="center">A validar</td>
+            </tr>
+            <tr>
+              <td>Soporte</td>
+              <td class="center">Segun acuerdo</td>
+              <td class="center">Segun acuerdo</td>
+              <td class="center">Segun acuerdo</td>
+            </tr>
+            <tr>
+              <td>Implementacion</td>
+              <td class="center">Segun proyecto</td>
+              <td class="center">Segun proyecto</td>
+              <td class="center">Segun proyecto</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-block" id="requisitos">
+    <div class="section-head text-center text-lg-start">
+      <div class="pre">Requisitos</div>
+      <h2>Requisitos referenciales</h2>
+      <p>Los requisitos tecnicos y operativos deben validarse antes de la puesta en marcha definitiva.</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-lg-6"><article class="req-card"><div class="icon-chip"><i class="bi bi-pc-display"></i></div><h3>Tecnicos</h3><ul><li>Equipo de escritorio o portatil</li><li>Navegador actualizado</li><li>Conexion a internet</li><li>Perifericos segun operacion</li></ul></article></div>
+      <div class="col-lg-6"><article class="req-card"><div class="icon-chip"><i class="bi bi-briefcase"></i></div><h3>Operativos</h3><ul><li>Informacion inicial del negocio</li><li>Datos administrativos y comerciales</li><li>Responsable del proyecto</li><li>Disponibilidad para validacion</li></ul></article></div>
+    </div>
+  </section>
+
+  <section class="section-block" id="faq">
+    <div class="section-head text-center text-lg-start">
+      <div class="pre">FAQ</div>
+      <h2>Preguntas frecuentes</h2>
+      <p>Las respuestas siguientes aclaran el enfoque comercial y las condiciones de validacion de la propuesta.</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-lg-6"><article class="faq-card"><h3>El precio ya esta definido?</h3><p>La pagina muestra un valor mensual de referencia de $89.900. Las condiciones finales deben confirmarse mediante cotizacion formal segun el alcance del servicio.</p></article></div>
+      <div class="col-lg-6"><article class="faq-card"><h3>Los requisitos son definitivos?</h3><p>No necesariamente. Se confirman en la validacion previa.</p></article></div>
+      <div class="col-lg-6"><article class="faq-card"><h3>Los planes son finales?</h3><p>No. Son referencias comerciales, no propuestas cerradas.</p></article></div>
+      <div class="col-lg-6"><article class="faq-card"><h3>Que falta para publicacion final?</h3><p>Definir precios reales, confirmar condiciones, incluir contactos oficiales y validar alcance del servicio.</p></article></div>
+    </div>
+  </section>
+
+  <section class="section-block" id="contacto">
+    <article class="cta-card text-center text-lg-start">
+      <div class="row align-items-center g-4">
+        <div class="col-lg-7">
+          <h2>FarmaPOS Cloud presenta una propuesta estructurada, clara y adaptable.</h2>
+          <p>Esta landing esta disenada como una base comercial solida, lista para ser completada con informacion validada y utilizada en entornos reales de negocio.</p>
+          <div class="cta-list">
+            <div class="item"><i class="bi bi-check2-circle"></i><span>Solicitud de propuesta comercial.</span></div>
+            <div class="item"><i class="bi bi-check2-circle"></i><span>312 794 7484.</span></div>
+            <div class="item"><i class="bi bi-check2-circle"></i><span>Canales de contacto del negocio.</span></div>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="d-grid gap-3">
+            <a class="btn btn-brand" href="mailto:farmapos_sft@gmail.com"><i class="bi bi-envelope-fill"></i> farmapos_sft@gmail.com</a>
+            <a class="btn btn-glass" href="tel:+573127947484"><i class="bi bi-telephone-fill"></i> 312 794 7484</a>
+          </div>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <div class="footer-note">&copy; 2026 FarmaPOS Cloud. Landing comercial de lanzamiento.</div>
 </div>
-
-<script>
-
-const WEBAPP_URL = "https://script.google.com/macros/s/AKfycby9Rf23ERVyl9LwZvQBycddgtxyyx3R8OsqlX0Fyyr7hKuYqnKnEJTGDXH72HyFsrSg/exec";
-const empresaInput = document.getElementById("empresa");
-const preview = document.getElementById("preview");
-const appLoading = document.getElementById("appLoading");
-const appLoadingText = document.getElementById("appLoadingText");
-const recoverModal = document.getElementById("recoverModal");
-const claveInput = document.getElementById("clave");
-const capsWarning = document.getElementById("capsWarning");
-const togglePass = document.getElementById("togglePass");
-const toastMsg = document.getElementById("toastMsg");
-const showPass = document.getElementById("showPass");
-
-empresaInput.addEventListener("input",()=>{
-let value = empresaInput.value.trim().toLowerCase();
-preview.innerText = value ? value + ".farmapos.com" : "";
-});
-
-document.getElementById("linkRecover").addEventListener("click",(e)=>{
-e.preventDefault();
-openRecoverModal();
-});
-
-function setPasswordVisible(visible){
-claveInput.type = visible ? "text" : "password";
-if(togglePass){ togglePass.innerText = visible ? "OCULTAR" : "VER"; }
-if(showPass){ showPass.checked = visible; }
-}
-
-if(togglePass){
-togglePass.addEventListener("click",()=>{
-setPasswordVisible(claveInput.type === "password");
-});
-}
-
-if(showPass){
-showPass.addEventListener("change",()=>{
-setPasswordVisible(!!showPass.checked);
-});
-}
-
-claveInput.addEventListener("keydown",(e)=>{
-if(e.getModifierState && e.getModifierState("CapsLock")){
-capsWarning.style.display = "block";
-}
-});
-
-claveInput.addEventListener("keyup",(e)=>{
-if(e.getModifierState && e.getModifierState("CapsLock")){
-capsWarning.style.display = "block";
-}else{
-capsWarning.style.display = "none";
-}
-});
-
-document.addEventListener("keydown",(e)=>{
-if(e.key === "Escape" && recoverModal.classList.contains("active")){
-closeRecoverModal();
-}
-if(e.key === "Enter" && !recoverModal.classList.contains("active")){
-login();
-}
-});
-
-recoverModal.addEventListener("click",(e)=>{
-if(e.target === recoverModal){
-closeRecoverModal();
-}
-});
-
-function setAppLoading(show, text){
-if(text){ appLoadingText.innerText = text; }
-if(show){ appLoading.classList.add("active"); }
-else{ appLoading.classList.remove("active"); }
-}
-
-function parseDateSafe(v){
-if(!v) return null;
-const d = new Date(v);
-if(!isNaN(d.getTime())) return new Date(d.getFullYear(), d.getMonth(), d.getDate());
-const s = String(v).trim();
-const p = s.split(/[\/-]/);
-if(p.length === 3){
-  const a = Number(p[0]), b = Number(p[1]), c = Number(p[2]);
-  if(a > 31) return new Date(a, b - 1, c);
-  if(c > 31) return new Date(c, b - 1, a);
-}
-return null;
-}
-
-function addMonths(baseDate, months){
-const d = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate());
-d.setMonth(d.getMonth() + Number(months || 0));
-return d;
-}
-
-function daysLeft(fromDate, toDate){
-const ms = toDate.getTime() - fromDate.getTime();
-return Math.ceil(ms / 86400000);
-}
-
-function inferMonthsFromPlan(planRaw){
-const p = String(planRaw || "").toLowerCase().trim();
-if(!p) return 0;
-if(p.includes("12") || p.includes("anual") || p.includes("año")) return 12;
-if(p.includes("6") || p.includes("semes")) return 6;
-if(p.includes("3") || p.includes("trimes")) return 3;
-if(p.includes("demo")) return 1;
-return 0;
-}
-
-function getHeaderIndex(headers, candidates, fallbackIdx){
-for(const c of candidates){
-  const i = headers.findIndex(h => h === c || h.includes(c));
-  if(i >= 0) return i;
-}
-return fallbackIdx != null ? fallbackIdx : -1;
-}
-
-function resolveLicenseInfo(headers, row){
-const today = new Date();
-const baseToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-
-const idxPlan = getHeaderIndex(headers, ["plan", "licencia", "tipo_licencia"], -1);
-const idxMonths = getHeaderIndex(headers, ["licencia_meses", "meses_licencia", "plan_meses"], -1);
-const idxStart = getHeaderIndex(headers, ["licencia_inicio", "fecha_inicio_licencia", "inicio_licencia"], -1);
-const idxEnd = getHeaderIndex(headers, ["licencia_fin", "fecha_fin_licencia", "vencimiento_licencia", "fin_licencia"], -1);
-
-const plan = idxPlan >= 0 ? String(row[idxPlan] || "").trim() : "";
-const months = idxMonths >= 0 ? Number(row[idxMonths] || 0) : inferMonthsFromPlan(plan);
-const start = parseDateSafe(idxStart >= 0 ? row[idxStart] : null) || baseToday;
-let end = parseDateSafe(idxEnd >= 0 ? row[idxEnd] : null);
-if(!end && months > 0) end = addMonths(start, months);
-
-if(!end){
-  return { active: true, plan: plan || "Sin limite", end: null, days: null };
-}
-const remaining = daysLeft(baseToday, end);
-return { active: remaining >= 0, plan: plan || `${months} meses`, end, days: remaining };
-}
-
-function saveLicenseSession(lic){
-if(!lic) return;
-localStorage.setItem("licencia_plan", String(lic.plan || ""));
-localStorage.setItem("licencia_estado", lic.active ? "activa" : "vencida");
-localStorage.setItem("licencia_dias", lic.days == null ? "" : String(lic.days));
-localStorage.setItem("licencia_fin", lic.end ? lic.end.toISOString().slice(0,10) : "");
-}
-
-function showToast(message){
-if(!toastMsg) return;
-toastMsg.innerText = message;
-toastMsg.classList.add("show");
-clearTimeout(showToast._timer);
-showToast._timer = setTimeout(()=>{
-toastMsg.classList.remove("show");
-}, 2000);
-}
-
-function openRecoverModal(){
-document.getElementById("recoverEmpresa").value = empresaInput.value.trim();
-document.getElementById("recoverUsuario").value = document.getElementById("usuario").value.trim();
-document.getElementById("recoverError").style.display = "none";
-document.getElementById("recoverSuccess").style.display = "none";
-recoverModal.classList.add("active");
-}
-
-function closeRecoverModal(){
-recoverModal.classList.remove("active");
-}
-
-async function recoverPassword(){
-const empresa = document.getElementById("recoverEmpresa").value.trim();
-const usuario = document.getElementById("recoverUsuario").value.trim();
-const err = document.getElementById("recoverError");
-const ok = document.getElementById("recoverSuccess");
-err.style.display = "none";
-ok.style.display = "none";
-
-if(!usuario){
-err.innerText = "El usuario es obligatorio.";
-err.style.display = "block";
-return;
-}
-
-setAppLoading(true,"Generando clave temporal...");
-try{
-const url = WEBAPP_URL + "?action=recover_password&empresa=" + encodeURIComponent(empresa) + "&usuario=" + encodeURIComponent(usuario);
-const res = await fetch(url,{cache:"no-store"});
-const data = await res.json();
-if(!res.ok || !data || data.ok === false){
-throw new Error(data && data.error ? data.error : "No se pudo recuperar");
-}
-
-ok.innerText = "Clave temporal: " + data.temporary_password;
-ok.style.display = "block";
-
-document.getElementById("usuario").value = usuario;
-document.getElementById("clave").value = data.temporary_password || "";
-if(empresa){ empresaInput.value = empresa; }
-}catch(error){
-err.innerText = error && error.message ? error.message : "Error conectando con la base de datos.";
-err.style.display = "block";
-}finally{
-setAppLoading(false);
-}
-}
-
-async function login(){
-
-const empresa = empresaInput.value.trim();
-const usuario = document.getElementById("usuario").value.trim();
-const clave = document.getElementById("clave").value.trim();
-
-const btn = document.getElementById("btnLogin");
-const spinner = document.getElementById("spinner");
-const errorMsg = document.getElementById("errorMsg");
-const successMsg = document.getElementById("successMsg");
-
-errorMsg.style.display="none";
-successMsg.style.display="none";
-setAppLoading(true,"Validando acceso...");
-
-if(!usuario || !clave){
-errorMsg.innerText="Usuario y contrasena son obligatorios.";
-errorMsg.style.display="block";
-setAppLoading(false);
-return;
-}
-
-btn.classList.add("loading");
-spinner.style.display="inline-block";
-
-try{
-const response = await fetch(WEBAPP_URL);
-const data = await response.json();
-
-let acceso = false;
-
-if(!Array.isArray(data) || data.length < 2){
-errorMsg.innerText="No hay usuarios registrados o formato de datos invalido.";
-errorMsg.style.display="block";
-btn.classList.remove("loading");
-spinner.style.display="none";
-setAppLoading(false);
-return;
-}
-
-const headers = (data[0] || []).map(h => String(h || "").trim().toLowerCase());
-const idxUsuario = headers.findIndex(h => h === "usuario" || h.includes("usuario"));
-const idxClave = headers.findIndex(h => h === "clave" || h.includes("contrase"));
-const idxRol = headers.findIndex(h => h === "rol" || h.includes("perfil"));
-const idxEstado = headers.findIndex(h => h === "estado" || h.includes("activo"));
-
-for(let i=1;i<data.length;i++){
-
-let usuarioSheet = data[i][idxUsuario >= 0 ? idxUsuario : 2];
-let claveSheet = data[i][idxClave >= 0 ? idxClave : 3];
-let rol = data[i][idxRol >= 0 ? idxRol : 4];
-let estado = data[i][idxEstado >= 0 ? idxEstado : 5];
-
-if(String(usuarioSheet || "").trim().toLowerCase() === usuario.toLowerCase() && String(claveSheet || "").trim() === clave){
-
-if(String(estado || "").trim().toLowerCase() !== "activo"){
-errorMsg.innerText="Usuario inactivo.";
-errorMsg.style.display="block";
-break;
-}
-
-  const lic = resolveLicenseInfo(headers, data[i] || []);
-
-  acceso = true;
-
-localStorage.setItem("usuario",usuario);
-localStorage.setItem("rol",rol);
-localStorage.setItem("empresa",empresa || "general");
-saveLicenseSession(lic);
-
-const licMsg = lic.days == null ? lic.plan : `${lic.plan} | ${lic.days} dias restantes`;
-successMsg.innerText="Bienvenido "+rol+". "+licMsg+". Redirigiendo...";
-successMsg.style.display="block";
-showToast("Bienvenido " + usuario + ". Login exitoso.");
-setAppLoading(true,"Cargando modulo principal...");
-
-setTimeout(()=>{
-window.location.href="dashboard.html";
-},1500);
-
-break;
-}
-}
-
-if(!acceso){
-errorMsg.innerText="Credenciales incorrectas.";
-errorMsg.style.display="block";
-setAppLoading(false);
-}
-
-}catch(error){
-errorMsg.innerText="Error conectando con la base de datos.";
-errorMsg.style.display="block";
-setAppLoading(false);
-}
-
-btn.classList.remove("loading");
-spinner.style.display="none";
-
-}
-
-</script>
-
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
+
+
+
+
 
